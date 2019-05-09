@@ -1,43 +1,44 @@
 {
-    "scripts": {
-        "build-dev": "webpack --watch --mode=development",
-        "build-pro": "webpack --mode=production"
-    },
-    "private": true,
-    "devDependencies": {
-        "@babel/core": "^7.4.4",
-        "@babel/plugin-proposal-class-properties": "^7.4.4",
-        "@babel/plugin-syntax-dynamic-import": "^7.2.0",
-        "@babel/polyfill": "^7.4.4",
-        "@babel/preset-env": "^7.4.4",
-        "@babel/preset-react": "^7.0.0",
-        "@babel/register": "^7.4.4",
-        "babel-loader": "^8.0.5",
-        "clean-webpack-plugin": "^0.1.16",
-        "css-loader": "^0.28.7",
-        "file-loader": "^3.0.1",
-        "html-webpack-plugin": "^3.2.0",
-        "mini-css-extract-plugin": "^0.6.0",
-        "optimize-css-assets-webpack-plugin": "^5.0.1",
-        "postcss-import": "^12.0.1",
-        "postcss-load-config": "^2.0.0",
-        "postcss-loader": "^3.0.0",
-        "postcss-plugin": "^1.0.0",
-        "style-loader": "^0.23.1",
-        "sugarss": "^2.0.0",
-        "terser-webpack-plugin": "^1.2.3",
-        "url-loader": "^1.1.2",
-        "webpack": "^4.30.0",
-        "webpack-cli": "^3.3.2"
-    },
-    "dependencies": {
-        "@loadable/component": "^5.9.0",
-        "@material-ui/core": "^3.9.3",
-        "@material-ui/icons": "^3.0.2",
-        "axios": "0.16.2",
-        "react": "^16.8.6",
-        "react-dom": "^16.8.6",
-        "react-router": "^5.0.0",
-        "react-router-dom": "^5.0.0"
-    }
+  "scripts": {
+    "build-dev": "webpack --watch --mode=development",
+    "build-pro": "webpack --mode=production"
+  },
+  "private": true,
+  "devDependencies": {
+    "@babel/core": "^7.4.4",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/polyfill": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/register": "^7.4.4",
+    "babel-loader": "^8.0.5",
+    "clean-webpack-plugin": "^0.1.16",
+    "css-loader": "^0.28.7",
+    "file-loader": "^3.0.1",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.6.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.1",
+    "postcss-import": "^12.0.1",
+    "postcss-load-config": "^2.0.0",
+    "postcss-loader": "^3.0.0",
+    "postcss-plugin": "^1.0.0",
+    "style-loader": "^0.23.1",
+    "sugarss": "^2.0.0",
+    "terser-webpack-plugin": "^1.2.3",
+    "url-loader": "^1.1.2",
+    "webpack": "^4.30.0",
+    "webpack-cli": "^3.3.2"
+  },
+  "dependencies": {
+    "@loadable/component": "^5.9.0",
+    "@material-ui/core": "^3.9.3",
+    "@material-ui/icons": "^3.0.2",
+    "@material-ui/styles": "^3.0.0-alpha.10",
+    "axios": "0.16.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-router": "^5.0.0",
+    "react-router-dom": "^5.0.0"
+  }
 }

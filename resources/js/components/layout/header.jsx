@@ -23,7 +23,7 @@ const styles = {
     menuButton: {
         marginLeft: -12,
         marginRight: 20,
-    },
+    }
 };
 
 class Header extends React.Component {

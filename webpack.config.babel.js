@@ -19,7 +19,7 @@ let config = {
     //devtool: 'eval-source-map',//配置生成Source Maps，选择合适的选项
     //项目的文件夹 可以直接用文件夹名称 默认会找index.js 也可以确定是哪个文件名字
     entry       : {
-        'app': JS_PATH + '/app.js',
+        'app': JS_PATH + '/index.js',
     },
     resolve     : {
         extensions: ['.js', '.jsx'],
