@@ -3,9 +3,11 @@ import path from 'path';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
 //定义了一些文件夹的路径
-let JS_PATH = path.resolve(path.resolve(__dirname), 'resources/assets/js');
-let TEMPLATE_PATH = path.resolve(path.resolve(__dirname), 'resources/assets/html');
+let JS_PATH = path.resolve(path.resolve(__dirname), 'resources/js');
+let TEMPLATE_PATH = path.resolve(path.resolve(__dirname), 'resources/html');
 let PUBLIC_PATH = path.resolve(path.resolve(__dirname), 'public');
 let config = {
     /*
@@ -27,10 +29,10 @@ let config = {
     },
     //输出的文件名 合并以后的js会命名为bundle.js
     output      : {
-        path         : PUBLIC_PATH + '/js/build',
-        filename     : '[name].js?v=[chunkhash]',
-        chunkFilename: '[name].bundle.js?v=[chunkhash]',
-        publicPath   : './js/build/',
+        path         : PUBLIC_PATH,
+        filename     : 'js/build/[name].js?v=[chunkhash]',
+        chunkFilename: 'js/build/[name].bundle.js?v=[chunkhash]',
+        publicPath   : 'http://localhost/fts3232/cash-note/public/',
     },
     //webpack-dev-server
     devServer   : {
@@ -42,8 +44,19 @@ let config = {
     module      : {
         rules: [
             {
-                test  : /\.css$/,
-                loader: 'style-loader!css-loader'
+                test: /\.css$/,
+                use : [
+                    {
+                        loader : "style-loader/url"
+                    },
+                    {
+                        loader : "file-loader",
+                        options: {
+                            name: '[name].[ext]?v=[hash]',
+                            outputPath: 'css/build'
+                        },
+                    },
+                ]
             },
             {
                 test   : /\.(js|jsx)$/,
@@ -63,7 +76,10 @@ let config = {
                             ],
                             ["@babel/preset-react"]
                         ],
-                        plugins: ['@babel/plugin-syntax-dynamic-import'],
+                        plugins: [
+                            '@babel/plugin-syntax-dynamic-import',
+                            '@babel/plugin-proposal-class-properties'
+                        ],
                     }
                 },
             }
@@ -85,7 +101,7 @@ let config = {
         'superagent'                   : 'superagent',
         'react-dom'                    : 'ReactDOM',
         'react-router'                 : 'ReactRouter',
-        'react-router-dom'             : 'react-router-dom',
+        'react-router-dom'             : 'ReactRouterDOM',
         'history/createBrowserHistory' : 'history',//history插件
         'moment/moment.js'             : 'moment',//时间插件
         'pubsub-js'                    : 'PubSub',//pubSub插件
@@ -103,7 +119,7 @@ let config = {
         'director'                     : true
     },
     plugins     : [
-        new CleanWebpackPlugin(['js/build','index.html'], {
+        new CleanWebpackPlugin(['js/build', 'index.html', 'css/build'], {
             root   : PUBLIC_PATH,
             verbose: true,
             dry    : false
@@ -111,32 +127,39 @@ let config = {
         new HtmlWebpackPlugin({
             template: TEMPLATE_PATH + '/index.html',
             filename: PUBLIC_PATH + '/index.html'
-        })
+        }),
+        new MiniCssExtractPlugin({
+            // Options similar to the same options in webpackOptions.output
+            // both options are optional
+            filename: '[name].css',
+            chunkFilename: '[id].css',
+        }),
     ],
     optimization: {
         runtimeChunk: {
             name: 'runtime.bundle'
         },
         minimizer   : [
-            new TerserPlugin()
+            new TerserPlugin(),
+            new OptimizeCSSAssetsPlugin()
         ],
-        splitChunks: {
-            chunks: 'async',
-            minSize: 30000,
-            maxSize: 0,
-            minChunks: 1,
-            maxAsyncRequests: 5,
-            maxInitialRequests: 3,
+        splitChunks : {
+            chunks                : 'async',
+            minSize               : 30000,
+            maxSize               : 0,
+            minChunks             : 1,
+            maxAsyncRequests      : 5,
+            maxInitialRequests    : 3,
             automaticNameDelimiter: '~',
-            name: true,
-            cacheGroups: {
+            name                  : true,
+            cacheGroups           : {
                 vendors: {
-                    test: /[\\/]node_modules[\\/]/,
+                    test    : /[\\/]node_modules[\\/]/,
                     priority: -10
                 },
                 default: {
-                    minChunks: 2,
-                    priority: -20,
+                    minChunks         : 2,
+                    priority          : -20,
                     reuseExistingChunk: true
                 }
             }
