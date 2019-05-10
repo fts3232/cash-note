@@ -6,52 +6,34 @@ import Header from './header.jsx';
 import Footer from './footer.jsx';
 import {BrowserRouter as Router, Route} from "react-router-dom";
 import loadable from '@loadable/component'
-import { withStyles } from '@material-ui/styles';
-import Paper from "@material-ui/core/Paper";
 
-const styles = {
-    grid:{
-        height:'100vh',
-    }
-};
-
-function Index() {
-    return <h2>Home</h2>;
-}
-
-function About() {
-    return <h2>About</h2>;
-}
-
-function Users() {
-    return <h2>Users</h2>;
-}
-
-const OtherComponent = loadable(() => import('../button.jsx'))
-
+const AddComponent = loadable(() => import('../add/index.jsx'))
+const ChartComponent = loadable(() => import('../chart/index.jsx'))
+const DetailComponent = loadable(() => import('../chart/index.jsx'))
 
 class App extends React.Component {
     state = {
-        spacing: '16',
+
     };
 
     render() {
-        const {spacing} = this.state;
+        this.props.PayIncrease()
         const {classes} = this.props;
         return (
             <Router>
                 <CssBaseline/>
-                <Grid container spacing={0}  direction="column" alignItems="stretch" className={classes.grid}>
-                    <Grid item xs={12}  style={{flexBasis: 'auto'}}>
-                        <Header/>
+
+                <Grid container spacing={0}  direction="column" alignItems="stretch" style={{flexWrap: 'nowrap',height:'100vh'}}>
+                    <Grid item xs={12} style={{flexBasis: 'auto'}}>
+                        <Header toggleFooter={this.toggleFooter}/>
                     </Grid>
                     <Grid item xs={12} style={{flexGrow:1, overflow: 'auto'}}>
-                        <Route path="/fts3232/cash-note/public/" exact component={Index}/>
-                        <Route path="/fts3232/cash-note/public/about/" component={About}/>
-                        <Route path="/fts3232/cash-note/public/users/" component={OtherComponent}/>
+                        <Route path="/fts3232/cash-note/public/" exact component={ChartComponent}/>
+                        <Route path="/fts3232/cash-note/public/detail/" component={DetailComponent}/>
+                        <Route path="/fts3232/cash-note/public/add/" component={AddComponent}/>
                     </Grid>
-                    <Grid item xs={12}  style={{flexBasis: 'auto'}}>
-                        <Footer/>
+                    <Grid item xs={12} style={{flexBasis: 'auto'}} >
+                        <Footer />
                     </Grid>
                 </Grid>
             </Router>
@@ -60,4 +42,4 @@ class App extends React.Component {
     }
 }
 
-export default withStyles(styles)(App);
+export default App;

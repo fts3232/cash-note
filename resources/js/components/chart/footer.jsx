@@ -2,8 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
-import DescriptionIcon from '@material-ui/icons/Description';
-import PieChartIcon from '@material-ui/icons/PieChart';
+import RestoreIcon from '@material-ui/icons/Restore';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 
 const styles = {
@@ -31,8 +32,8 @@ class Footer extends React.Component {
                 showLabels
                 className={classes.root}
             >
-                <BottomNavigationAction label="图表" icon={<PieChartIcon />} />
-                <BottomNavigationAction label="明细" icon={<DescriptionIcon />} />
+                <BottomNavigationAction label="图表" icon={<RestoreIcon />} />
+                <BottomNavigationAction label="明细" icon={<FavoriteIcon />} />
             </BottomNavigation>
         );
     }

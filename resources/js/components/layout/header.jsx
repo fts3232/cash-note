@@ -49,7 +49,7 @@ class Header extends React.Component {
                     <Typography variant="h6" color="inherit" className={classes.grow}>
                         记账本
                     </Typography>
-                    <IconButton className={classes.menuButton} color="inherit" aria-label="add">
+                    <IconButton className={classes.menuButton} color="inherit" aria-label="add" component={RouterLink} to="/fts3232/cash-note/public/add">
                         <AddIcon />
                     </IconButton>
                 </Toolbar>
