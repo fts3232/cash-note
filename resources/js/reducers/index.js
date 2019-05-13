@@ -1,12 +1,8 @@
-import { combineReducers } from 'redux'
-const todos = (state = {'footerHidden':false}, action) => {
-    switch (action.type) {
-        case 'TOGGLE_FOOTER':
-            return  {'footerHidden':!state.footerHidden}
+import {combineReducers} from 'redux'
+import footer from './footer.js';
+import header from './header.js';
 
-        default:
-            return state
-    }
-}
+//const store = createStore(combineReducers({footer}));
 
-export default combineReducers({todos})
+//export default store
+export default combineReducers({footer, header})

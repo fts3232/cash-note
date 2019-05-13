@@ -47,12 +47,12 @@ let config = {
                 test: /\.css$/,
                 use : [
                     {
-                        loader : "style-loader/url"
+                        loader: "style-loader/url"
                     },
                     {
                         loader : "file-loader",
                         options: {
-                            name: '[name].[ext]?v=[hash]',
+                            name      : '[name].[ext]?v=[hash]',
                             outputPath: 'css/build'
                         },
                     },
@@ -96,12 +96,13 @@ let config = {
         'style-loader'                 : 'style-loader',
         'sass-loader'                  : 'sass-loader',
         "lodash"                       : 'lodash',
-        "react"                        : 'React',
         'mockjs'                       : 'Mock',
         'superagent'                   : 'superagent',
+        "react"                        : 'React',
         'react-dom'                    : 'ReactDOM',
-        'react-router'                 : 'ReactRouter',
-        'react-router-dom'             : 'ReactRouterDOM',
+        //'react-router'                 : 'ReactRouter',
+        //'react-router-dom'             : 'ReactRouterDOM',
+        //'react-router-config'          : 'ReactRouterConfig',
         'history/createBrowserHistory' : 'history',//history插件
         'moment/moment.js'             : 'moment',//时间插件
         'pubsub-js'                    : 'PubSub',//pubSub插件
@@ -131,7 +132,7 @@ let config = {
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output
             // both options are optional
-            filename: '[name].css',
+            filename     : '[name].css',
             chunkFilename: '[id].css',
         }),
     ],

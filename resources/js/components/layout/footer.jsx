@@ -6,6 +6,7 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import PieChartIcon from '@material-ui/icons/PieChart';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 
+
 const styles = {
     root: {
 
@@ -24,7 +25,6 @@ class Footer extends React.Component {
         const { classes } = this.props;
         const { value } = this.state;
         return (
-
             <BottomNavigation
                 value={value}
                 onChange={this.handleChange}

@@ -10,7 +10,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import TextField from '@material-ui/core/TextField';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import Button from '@material-ui/core/Button';
-import { Link as RouterLink } from 'react-router-dom'
+import {Link as RouterLink} from 'react-router-dom'
 
 
 const styles = theme => ({
@@ -38,11 +38,41 @@ class Add extends React.Component {
         type    : 0,
         amount  : '',
         category: 0,
-        remark  : ''
+        remark  : '',
+        categoryMap:[]
     };
 
     handleChange = name => event => {
-        let value = event.target.value
+        let value = event.target.value;
+        let categoryMap = {
+            'cost'  : [
+                {
+                    'label': "生活必要花费",
+                    'items': {
+                        'c-1': '交通',
+                        'c-2': '餐饮',
+                        'c-3': '住宿',
+                    },
+                },
+                {
+                    'label': "其他",
+                    'items': {
+                        'c-4' : '交通',
+                        'c-5' : '餐饮',
+                        'c-6' : '住宿',
+                        'c-7' : '网吧',
+                        'c-8' : '游戏',
+                        'c-9' : '购物',
+                        'c-10': '大保健',
+                    },
+                }
+            ],
+            'income': {
+                'i-1': '工资',
+                'i-2': '其他'
+            }
+        };
+
         this.setState({[name]: value});
     };
 
@@ -83,11 +113,9 @@ class Add extends React.Component {
                                 <option value={2}>餐饮</option>
                                 <option value={3}>住宿</option>
                             </optgroup>
-                            <optgroup label="外出">
+                            <optgroup label="其他">
                                 <option value={3}>交通</option>
                                 <option value={4}>餐饮</option>
-                            </optgroup>
-                            <optgroup label="娱乐项目">
                                 <option value={5}>网吧</option>
                                 <option value={6}>手游</option>
                                 <option value={7}>端游</option>
@@ -96,6 +124,7 @@ class Add extends React.Component {
                             </optgroup>
                             <optgroup label="收入项目">
                                 <option value={10}>工资</option>
+                                <option value={11}>其他</option>
                             </optgroup>
                         </NativeSelect>
                     </FormControl>
@@ -106,6 +135,7 @@ class Add extends React.Component {
                             className={classes.textField}
                             value={this.state.amount}
                             placeholder="0.00"
+                            type="number"
                             onChange={this.handleChange('amount')}
                         />
                     </FormControl>
@@ -114,7 +144,6 @@ class Add extends React.Component {
                         <TextField
                             multiline
                             rows="4"
-                            defaultValue=""
                             placeholder="请输入备注"
                             value={this.state.remark}
                             onChange={this.handleChange('remark')}
