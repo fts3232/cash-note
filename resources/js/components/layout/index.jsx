@@ -25,14 +25,15 @@ class App extends React.Component {
     state = {};
 
     render() {
-        const {classes, route, location} = this.props;
+        const {classes, route, history} = this.props;
+        let showBack =  location.pathname != '/fts3232/cash-note/public/';
         let hidden = location.pathname == '/fts3232/cash-note/public/add/';
         return (
             <div>
                 <CssBaseline/>
                 <Grid container spacing={0} direction="column" alignItems="stretch" style={{flexWrap: 'nowrap', height: '100vh'}}>
                     <Grid item xs={12} className={classes.header}>
-                        <Header/>
+                        <Header showBack={showBack} history={history}/>
                     </Grid>
                     <Grid item xs={12} className={classes.body}>
                         {renderRoutes(route.routes)}

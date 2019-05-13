@@ -35,9 +35,9 @@ const styles = theme => ({
 
 let id = 0;
 
-function createData(name, calories, fat, carbs, protein) {
+function createData( type, amount, category,remark) {
     id += 1;
-    return {id, name, calories, fat, carbs, protein};
+    return {id, type, amount, category,remark};
 }
 
 const rows = [
@@ -202,11 +202,13 @@ class Dashboard extends React.Component {
                                 {rows.map(row => (
                                     <TableRow key={row.id}>
                                         <TableCell component="th" scope="row">
-                                            {row.name}
+                                            {row.type == 1 ? '收入' : '支出'}
                                         </TableCell>
-                                        <TableCell align="right">项目</TableCell>
-                                        <TableCell align="right">金额</TableCell>
-                                        <TableCell align="right">备注</TableCell>
+                                        <TableCell align="right">{row.category}</TableCell>
+                                        <TableCell align="right" className={row.type == 1 ? classes.income : classes.cost}>
+                                            {row.type == 1 ? '+' : '-' }{row.amount}
+                                        </TableCell>
+                                        <TableCell align="right">{row.remark}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

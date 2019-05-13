@@ -105,7 +105,7 @@ class Dashboard extends React.Component {
 
         return (
             <Grid container spacing={8}>
-                <Grid item xs={6}>
+                <Grid item xs={4}>
                     <Card>
                         <CardContent>
                             <Typography className={classes.title} color="textSecondary" gutterBottom>
@@ -117,13 +117,25 @@ class Dashboard extends React.Component {
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={4}>
                     <Card>
                         <CardContent>
                             <Typography className={classes.title} color="textSecondary" gutterBottom>
                                 总支出
                             </Typography>
                             <Typography variant="h5" component="h2" className={classes.cost}>
+                                12,018.80
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={4}>
+                    <Card>
+                        <CardContent>
+                            <Typography className={classes.title} color="textSecondary" gutterBottom>
+                                净值
+                            </Typography>
+                            <Typography variant="h5" component="h2" className={classes.income}>
                                 12,018.80
                             </Typography>
                         </CardContent>

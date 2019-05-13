@@ -12,7 +12,7 @@ const routes = [
             {
                 path: "/fts3232/cash-note/public/",
                 exact: true,
-                component: DetailComponent,
+                component: DashboardComponent,
             },
             {
                 path: "/fts3232/cash-note/public/detail/",

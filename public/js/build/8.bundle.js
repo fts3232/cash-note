@@ -1,4 +1,4 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[5],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[8],{
 
 /***/ "./resources/js/components/add/index.jsx":
 /*!***********************************************!*\

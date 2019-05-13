@@ -35,44 +35,18 @@ const styles = theme => ({
 
 class Add extends React.Component {
     state = {
-        type    : 0,
-        amount  : '',
-        category: 0,
-        remark  : '',
-        categoryMap:[]
+        type       : 0,
+        amount     : '',
+        category   : 'c-1',
+        remark     : '',
+        categoryMap: []
     };
 
     handleChange = name => event => {
         let value = event.target.value;
-        let categoryMap = {
-            'cost'  : [
-                {
-                    'label': "生活必要花费",
-                    'items': {
-                        'c-1': '交通',
-                        'c-2': '餐饮',
-                        'c-3': '住宿',
-                    },
-                },
-                {
-                    'label': "其他",
-                    'items': {
-                        'c-4' : '交通',
-                        'c-5' : '餐饮',
-                        'c-6' : '住宿',
-                        'c-7' : '网吧',
-                        'c-8' : '游戏',
-                        'c-9' : '购物',
-                        'c-10': '大保健',
-                    },
-                }
-            ],
-            'income': {
-                'i-1': '工资',
-                'i-2': '其他'
-            }
-        };
-
+        if (name == 'type') {
+            this.setState({'category': value == 0 ? 'c-1' : 'i-1'});
+        }
         this.setState({[name]: value});
     };
 
@@ -82,7 +56,66 @@ class Add extends React.Component {
 
     render() {
         const {classes} = this.props;
-        const {value} = this.state;
+        const {type} = this.state;
+        const categoryMap = {
+            'cost'  : [
+                {
+                    'label': "生活必要花费",
+                    'items': [
+                        {
+                            label: '交通', value: 'c-1'
+                        },
+                        {
+                            label: '餐饮', value: 'c-2'
+                        },
+                        {
+                            label: '住宿', value: 'c-3'
+                        },
+                        {
+                            label: '话费', value: 'c-4'
+                        }
+                    ]
+                },
+                {
+                    'label': "其他",
+                    'items': [
+                        {
+                            label: '交通', value: 'c-5'
+                        },
+                        {
+                            label: '餐饮', value: 'c-6'
+                        },
+                        {
+                            label: '住宿', value: 'c-7'
+                        },
+                        {
+                            label: '网吧', value: 'c-8'
+                        }
+                        ,
+                        {
+                            label: '游戏', value: 'c-9'
+                        }
+                        ,
+                        {
+                            label: '购物', value: 'c-10'
+                        }
+                        ,
+                        {
+                            label: '大保健', value: 'c-11'
+                        }
+                    ]
+                }
+            ],
+            'income': [
+                {
+                    label: '工资', value: 'i-1'
+                },
+                {
+                    label: '其他', value: 'i-2'
+                }
+            ]
+        };
+        let categorys = type == 0 ? categoryMap.cost : categoryMap.income
         return (
             <div className={classes.root}>
                 <FormGroup>
@@ -108,24 +141,19 @@ class Add extends React.Component {
                             name="category"
                             className={classes.textField}
                         >
-                            <optgroup label="生活必要花费">
-                                <option value={1}>交通</option>
-                                <option value={2}>餐饮</option>
-                                <option value={3}>住宿</option>
-                            </optgroup>
-                            <optgroup label="其他">
-                                <option value={3}>交通</option>
-                                <option value={4}>餐饮</option>
-                                <option value={5}>网吧</option>
-                                <option value={6}>手游</option>
-                                <option value={7}>端游</option>
-                                <option value={8}>购物</option>
-                                <option value={9}>大保健</option>
-                            </optgroup>
-                            <optgroup label="收入项目">
-                                <option value={10}>工资</option>
-                                <option value={11}>其他</option>
-                            </optgroup>
+                            {categorys.map((category) => {
+                                if (typeof category.items != 'undefined') {
+                                    return (
+                                        <optgroup label={category.label}>
+                                            {category.items.map((items) => {
+                                                return (<option value={items.value}>{items.label}</option>)
+                                            })}
+                                        </optgroup>
+                                    )
+                                } else {
+                                    return (<option value={category.value}>{category.label}</option>)
+                                }
+                            })}
                         </NativeSelect>
                     </FormControl>
                     <FormControl component="fieldset" className={classes.formControl}>

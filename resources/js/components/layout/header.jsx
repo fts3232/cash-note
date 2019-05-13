@@ -6,6 +6,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import HomeIcon from '@material-ui/icons/Home';
+import ReplyIcon from '@material-ui/icons/Reply';
 import AddIcon from '@material-ui/icons/Add';
 import { Link as RouterLink } from 'react-router-dom'
 
@@ -25,14 +26,25 @@ class Header extends React.Component {
 
     };
 
+    goBack = () => {
+        const { history } = this.props;
+        history.goBack()
+    }
+
     render() {
-        const { classes } = this.props;
+        const { classes, showBack } = this.props;
         return (
             <AppBar position="static">
                 <Toolbar>
-                    <IconButton className={classes.menuButton} color="inherit" aria-label="add" component={RouterLink} to="/fts3232/cash-note/public/">
-                        <HomeIcon />
-                    </IconButton>
+                    {showBack ? (
+                        <IconButton className={classes.menuButton} color="inherit" aria-label="add" onClick={this.goBack}>
+                            <ReplyIcon />
+                        </IconButton>
+                    ) : (
+                        <IconButton className={classes.menuButton} color="inherit" aria-label="add" component={RouterLink} to="/fts3232/cash-note/public/">
+                            <HomeIcon />
+                        </IconButton>
+                    )}
                     <Typography variant="h6" color="inherit" className={classes.grow}>
                         记账本
                     </Typography>
@@ -46,11 +58,15 @@ class Header extends React.Component {
 }
 
 Header.propTypes = { //isRequired  代表该参数是必须的
+    showBack:PropTypes.bool,
     classes: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.array,
         PropTypes.object
     ]),
+};
+Header.defaultProps = {
+    showBack: false
 };
 
 export default withStyles(styles)(Header);
