@@ -10,7 +10,8 @@ import FormGroup from '@material-ui/core/FormGroup';
 import TextField from '@material-ui/core/TextField';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import Button from '@material-ui/core/Button';
-import {Link as RouterLink} from 'react-router-dom'
+import {Link as RouterLink} from 'react-router-dom';
+import axios from 'axios';
 
 
 const styles = theme => ({
@@ -32,6 +33,12 @@ const styles = theme => ({
     },
 });
 
+let date = new Date();
+let month = date.getMonth() + 1;
+month = month < 10 ? '0' + month : month;
+let year = date.getFullYear();
+let day = date.getDay();
+day = day < 10 ? '0' + day : day;
 
 class Add extends React.Component {
     state = {
@@ -39,7 +46,8 @@ class Add extends React.Component {
         amount     : '',
         category   : 'c-1',
         remark     : '',
-        categoryMap: []
+        categoryMap: [],
+        date       : year + '-' + month + '-' + day
     };
 
     handleChange = name => event => {
@@ -51,7 +59,19 @@ class Add extends React.Component {
     };
 
     post = () => {
-        console.log(this.state)
+        const {state} = this;
+        let params = {
+            type    : state.type,
+            amount  : state.amount,
+            category: state.category,
+            remark  : state.remark,
+            date    : state.date
+        }
+        axios.post('http://localhost/fts3232/workspace/installer/lumen/public', {params: params}, {timeout: 5000}).then(function (response) {
+            this.setState({data: response.data.result,})
+        }).catch(function (error) {
+            console.log(error);
+        });
     }
 
     render() {
@@ -120,6 +140,19 @@ class Add extends React.Component {
             <div className={classes.root}>
                 <FormGroup>
                     <FormControl component="fieldset">
+                        <FormLabel component="legend">日期</FormLabel>
+                        <TextField
+                            id="date"
+                            type="date"
+                            defaultValue={this.state.date}
+                            className={classes.textField}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            onChange={this.handleChange('date')}
+                        />
+                    </FormControl>
+                    <FormControl component="fieldset" className={classes.formControl}>
                         <FormLabel component="legend">类型</FormLabel>
                         <RadioGroup
                             aria-label="类型"
