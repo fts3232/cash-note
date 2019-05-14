@@ -30,16 +30,16 @@ let config = {
     //输出的文件名 合并以后的js会命名为bundle.js
     output      : {
         path         : PUBLIC_PATH,
-        filename     : 'js/build/[name].js?v=[chunkhash]',
+        filename     : 'js/build/[name].js?v=[hash]',
         chunkFilename: 'js/build/[name].bundle.js?v=[chunkhash]',
-        publicPath   : 'http://localhost/fts3232/cash-note/public/',
+        publicPath   : '/',
     },
     //webpack-dev-server
     devServer   : {
         //host: '192.168.0.123',
         historyApiFallback: true,
         hot               : true,
-        inline            : true,
+        inline            : true
     },
     module      : {
         rules: [
@@ -56,6 +56,9 @@ let config = {
                             outputPath: 'css/build'
                         },
                     },
+                    {
+                        loader: 'postcss-loader'
+                    }
                 ]
             },
             {

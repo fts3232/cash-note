@@ -8,19 +8,21 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import ReactEcharts from 'echarts-for-react';
-import { Link as RouterLink } from 'react-router-dom'
+import {Link as RouterLink} from 'react-router-dom';
+import Chip from '@material-ui/core/Chip';
+import axios from 'axios';
 
 const styles = theme => ({
-    title : {
+    title     : {
         fontSize: 14,
     },
-    income: {
+    income    : {
         color: 'green'
     },
-    cost  : {
+    cost      : {
         color: 'red'
     },
-    bar   : {
+    bar       : {
         '& .ct-series-a': {
             '& .ct-bar': {
                 stroke: 'green'
@@ -32,23 +34,39 @@ const styles = theme => ({
             }
         }
     },
-    cardAction:{
-        display:'block',
+    cardAction: {
+        display  : 'block',
         textAlign: 'right'
+    },
+    chip      : {
+        marginRight: '5px'
     }
 });
 
 class Dashboard extends React.Component {
     state = {
-        data: {
+        data            : {
             income: [1, 2, 4, 8, 6, 23, 432, 2, 77, 13],
             cost  : [1, 2, 4, 8, 6, 323, 22, 66, 545, 2120]
         },
-        day : 30,
+        queryDay        : 'all',
+        grossIncome     : '0.00',
+        totalExpenditure: '0.00',
     };
 
     getOptions() {
-        let {data} = this.state;
+        let { data, queryDay } = this.state;
+        let date = new Date();
+        let currentMonth = date.getMonth() + 1;
+        let xAxisData = [];
+        for (let i = 12; i > 0; i--) {
+            xAxisData.push(currentMonth + '月')
+            console.log(currentMonth + '月');
+            currentMonth -=1;
+            if(currentMonth <= 0){
+                currentMonth = 12;
+            }
+        }
         return {
             tooltip: {
                 trigger    : 'axis',
@@ -68,7 +86,7 @@ class Dashboard extends React.Component {
             xAxis  : [
                 {
                     type: 'category',
-                    data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月']
+                    data: xAxisData
                 }
             ],
             yAxis  : [
@@ -91,20 +109,42 @@ class Dashboard extends React.Component {
         };
     }
 
-    onClick = () => {
-        this.setState({
-            data: {
-                income: [10000, 2, 4, 8, 6, 23, 432, 2, 77, 13],
-                cost  : [1, 2, 4, 8, 6, 323, 22, 66, 545, 2120]
-            }
+    handleClick = (day) => () => {
+        this.setState({queryDay: day},() => {
+            this.getData()
         })
-    }
+    };
+
+    getData = () => {
+        const {queryDay} = this.state;
+        let params = {
+            queryDay: queryDay
+        };
+        axios.get('api/user/fetch', {params: params}, {timeout: 5000}).then(function (response) {
+            this.setState({data: response.data.result,})
+        }).catch(function (error) {
+            console.log(error);
+        });
+    };
+
+    numberFormat = (num) => {
+        return num.replace(/\d+/, function(s){
+            return s.replace(/(\d)(?=(\d{3})+$)/g, '$1,')
+        })
+    };
 
     render() {
         const {classes} = this.props;
-
+        const {queryDay, grossIncome, totalExpenditure} = this.state;
         return (
             <Grid container spacing={8}>
+                <Grid item xs={12}>
+                    <Chip label="最近1个月" color={queryDay === '1month' ? 'primary' : ''} onClick={this.handleClick('1month')} className={classes.chip}/>
+                    <Chip label="最近3个月" color={queryDay === '3month' ? 'primary' : ''} onClick={this.handleClick('3month')} className={classes.chip}/>
+                    <Chip label="最近6个月" color={queryDay === '6month' ? 'primary' : ''} onClick={this.handleClick('6month')} className={classes.chip}/>
+                    <Chip label="最近1年" color={queryDay === '1year' ? 'primary' : ''} onClick={this.handleClick('1year')} className={classes.chip}/>
+                    <Chip label="全部" color={queryDay === 'all' ? 'primary' : ''} onClick={this.handleClick('all')} className={classes.chip}/>
+                </Grid>
                 <Grid item xs={4}>
                     <Card>
                         <CardContent>
@@ -112,7 +152,7 @@ class Dashboard extends React.Component {
                                 总收入
                             </Typography>
                             <Typography variant="h5" component="h5" className={classes.income}>
-                                1,256.50
+                                {this.numberFormat(grossIncome)}
                             </Typography>
                         </CardContent>
                     </Card>
@@ -124,7 +164,7 @@ class Dashboard extends React.Component {
                                 总支出
                             </Typography>
                             <Typography variant="h5" component="h2" className={classes.cost}>
-                                12,018.80
+                                {this.numberFormat(totalExpenditure)}
                             </Typography>
                         </CardContent>
                     </Card>
@@ -136,7 +176,7 @@ class Dashboard extends React.Component {
                                 净值
                             </Typography>
                             <Typography variant="h5" component="h2" className={classes.income}>
-                                12,018.80
+                                {this.numberFormat((grossIncome - totalExpenditure).toFixed(2))}
                             </Typography>
                         </CardContent>
                     </Card>

@@ -26,8 +26,8 @@ class App extends React.Component {
 
     render() {
         const {classes, route, history} = this.props;
-        let showBack =  location.pathname != '/fts3232/cash-note/public/';
-        let hidden = location.pathname == '/fts3232/cash-note/public/add/';
+        let showBack =  location.pathname != '/';
+        let hidden = location.pathname == '/add/';
         return (
             <div>
                 <CssBaseline/>

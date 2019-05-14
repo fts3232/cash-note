@@ -10,16 +10,16 @@ const routes = [
         component: Layout,
         routes: [
             {
-                path: "/fts3232/cash-note/public/",
+                path: "/",
                 exact: true,
                 component: DashboardComponent,
             },
             {
-                path: "/fts3232/cash-note/public/detail/",
+                path: "/detail/",
                 component: DetailComponent
             },
             {
-                path: "/fts3232/cash-note/public/add/",
+                path: "/add/",
                 component: AddComponent
             },
         ]

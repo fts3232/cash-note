@@ -183,7 +183,7 @@ class Add extends React.Component {
                     <Button variant="contained" color="primary" component="span" className={classes.button} onClick={this.post}>
                         添加
                     </Button>
-                    <Button variant="contained" component="span" className={classes.button} component={RouterLink} to="/fts3232/cash-note/public/">
+                    <Button variant="contained" component="span" className={classes.button} component={RouterLink} to="/">
                         取消
                     </Button>
                 </div>

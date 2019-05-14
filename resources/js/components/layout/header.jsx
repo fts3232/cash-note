@@ -41,14 +41,14 @@ class Header extends React.Component {
                             <ReplyIcon />
                         </IconButton>
                     ) : (
-                        <IconButton className={classes.menuButton} color="inherit" aria-label="add" component={RouterLink} to="/fts3232/cash-note/public/">
+                        <IconButton className={classes.menuButton} color="inherit" aria-label="add" component={RouterLink} to="/">
                             <HomeIcon />
                         </IconButton>
                     )}
                     <Typography variant="h6" color="inherit" className={classes.grow}>
                         记账本
                     </Typography>
-                    <IconButton className={classes.menuButton} color="inherit" aria-label="add" component={RouterLink} to="/fts3232/cash-note/public/add/">
+                    <IconButton className={classes.menuButton} color="inherit" aria-label="add" component={RouterLink} to="/add/">
                         <AddIcon />
                     </IconButton>
                 </Toolbar>
