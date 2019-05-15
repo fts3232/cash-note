@@ -12,6 +12,7 @@ import NativeSelect from '@material-ui/core/NativeSelect';
 import Button from '@material-ui/core/Button';
 import {Link as RouterLink} from 'react-router-dom';
 import axios from 'axios';
+import MySnackbarContentWrapper from '../common/snackbar.jsx';
 
 
 const styles = theme => ({
@@ -41,13 +42,16 @@ let day = date.getDay();
 day = day < 10 ? '0' + day : day;
 
 class Add extends React.Component {
+    queue = [];
+
     state = {
         type       : 0,
         amount     : '',
         category   : 'c-1',
         remark     : '',
         categoryMap: [],
-        date       : year + '-' + month + '-' + day
+        date       : year + '-' + month + '-' + day,
+        showTip:false
     };
 
     handleChange = name => event => {
@@ -67,6 +71,7 @@ class Add extends React.Component {
             remark  : state.remark,
             date    : state.date
         }
+        this.setState({showTip:true})
         axios.post('http://localhost/fts3232/workspace/installer/lumen/public', {params: params}, {timeout: 5000}).then(function (response) {
             this.setState({data: response.data.result,})
         }).catch(function (error) {
@@ -76,7 +81,7 @@ class Add extends React.Component {
 
     render() {
         const {classes} = this.props;
-        const {type} = this.state;
+        const {type,showTip} = this.state;
         const categoryMap = {
             'cost'  : [
                 {
@@ -220,6 +225,20 @@ class Add extends React.Component {
                         取消
                     </Button>
                 </div>
+                <MySnackbarContentWrapper
+                    variant="success"
+                    message="添加成功！"
+                    horizontal="center"
+                    vertical="top"
+                    ref={'tip'}
+                    open={showTip}
+                    onClose={(event, reason)=>{
+                        if (reason === 'clickaway') {
+                            return;
+                        }
+                        this.setState({showTip: false});
+                    }}
+                />
             </div>
         );
     }

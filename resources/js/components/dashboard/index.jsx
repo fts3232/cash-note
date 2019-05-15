@@ -121,7 +121,7 @@ class Dashboard extends React.Component {
             queryDay: queryDay
         };
         axios.get('api/user/fetch', {params: params}, {timeout: 5000}).then(function (response) {
-            this.setState({data: response.data.result,})
+            this.setState(response.data.result)
         }).catch(function (error) {
             console.log(error);
         });
