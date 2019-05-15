@@ -13,7 +13,7 @@ import Button from '@material-ui/core/Button';
 import {Link as RouterLink} from 'react-router-dom';
 import axios from 'axios';
 import MySnackbarContentWrapper from '../common/snackbar.jsx';
-
+import Qs from 'qs';
 
 const styles = theme => ({
     root       : {
@@ -64,16 +64,18 @@ class Add extends React.Component {
 
     post = () => {
         const {state} = this;
-        let params = {
+        const _this = this;
+        let data = {
             type    : state.type,
             amount  : state.amount,
             category: state.category,
             remark  : state.remark,
             date    : state.date
         }
+        data = Qs.stringify(data)
         this.setState({showTip:true})
-        axios.post('http://localhost/fts3232/workspace/installer/lumen/public', {params: params}, {timeout: 5000}).then(function (response) {
-            this.setState({data: response.data.result,})
+        axios.post('http://localhost/fts3232/workspace/installer/lumen/public/api/cashNote/add', data, {timeout: 5000}).then(function (response) {
+            _this.setState({data: response.data.result,})
         }).catch(function (error) {
             console.log(error);
         });
