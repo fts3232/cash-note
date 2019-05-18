@@ -100,6 +100,9 @@ class Add extends React.Component {
                         },
                         {
                             label: '话费', value: 'c-4'
+                        },
+                        {
+                            label: '剪发', value: 'c-5'
                         }
                     ]
                 },
