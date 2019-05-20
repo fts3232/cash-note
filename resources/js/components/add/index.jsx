@@ -13,6 +13,7 @@ import Button from '@material-ui/core/Button';
 import {Link as RouterLink} from 'react-router-dom';
 import axios from 'axios';
 import MySnackbarContentWrapper from '../common/snackbar.jsx';
+import showMessage from '../common/showMessage.jsx';
 import Qs from 'qs';
 
 const styles = theme => ({
@@ -63,6 +64,8 @@ class Add extends React.Component {
     };
 
     post = () => {
+        showMessage('success','1232');
+        return false;
         const {state} = this;
         const _this = this;
         let data = {

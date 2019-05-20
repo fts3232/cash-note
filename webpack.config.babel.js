@@ -39,7 +39,10 @@ let config = {
         //host: '192.168.0.123',
         historyApiFallback: true,
         hot               : true,
-        inline            : true
+        inline            : true,
+        compress: true,
+        watchContentBase: true,
+        open: true
     },
     module      : {
         rules: [
