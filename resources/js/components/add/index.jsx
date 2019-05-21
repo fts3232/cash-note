@@ -12,8 +12,8 @@ import NativeSelect from '@material-ui/core/NativeSelect';
 import Button from '@material-ui/core/Button';
 import {Link as RouterLink} from 'react-router-dom';
 import axios from 'axios';
-import MySnackbarContentWrapper from '../common/snackbar.jsx';
 import showMessage from '../common/showMessage.jsx';
+import {selectCategoryMap as categoryMap} from '../../config/app.js';
 import Qs from 'qs';
 
 const styles = theme => ({
@@ -43,8 +43,6 @@ let day = date.getDay();
 day = day < 10 ? '0' + day : day;
 
 class Add extends React.Component {
-    queue = [];
-
     state = {
         type       : 0,
         amount     : '',
@@ -52,7 +50,7 @@ class Add extends React.Component {
         remark     : '',
         categoryMap: [],
         date       : year + '-' + month + '-' + day,
-        showTip:false
+        submission : false
     };
 
     handleChange = name => event => {
@@ -64,90 +62,38 @@ class Add extends React.Component {
     };
 
     post = () => {
-        showMessage('success','1232');
-        return false;
+        const {submission} = this.state;
         const {state} = this;
         const _this = this;
-        let data = {
-            type    : state.type,
-            amount  : state.amount,
-            category: state.category,
-            remark  : state.remark,
-            date    : state.date
+        if (!submission) {
+            this.setState({'submission': true}, () => {
+                let data = {
+                    type    : state.type,
+                    amount  : state.amount,
+                    category: state.category,
+                    remark  : state.remark,
+                    date    : state.date
+                };
+                data = Qs.stringify(data);
+                axios.post('http://localhost/fts3232/workspace/installer/lumen/public/api/cashNote/add', data, {timeout: 5000}).then(function (response) {
+                    let type = 'success';
+                    if (!response.data.status) {
+                        type = 'error'
+                    }
+                    showMessage(type, response.data.msg);
+                }).catch(function (error) {
+                    console.log(error);
+                    showMessage('error', error.message);
+                }).then(() => {
+                    _this.setState({'submission': false})
+                });
+            })
         }
-        data = Qs.stringify(data)
-        this.setState({showTip:true})
-        axios.post('http://localhost/fts3232/workspace/installer/lumen/public/api/cashNote/add', data, {timeout: 5000}).then(function (response) {
-            _this.setState({data: response.data.result,})
-        }).catch(function (error) {
-            console.log(error);
-        });
     }
 
     render() {
         const {classes} = this.props;
-        const {type,showTip} = this.state;
-        const categoryMap = {
-            'cost'  : [
-                {
-                    'label': "生活必要花费",
-                    'items': [
-                        {
-                            label: '交通', value: 'c-1'
-                        },
-                        {
-                            label: '餐饮', value: 'c-2'
-                        },
-                        {
-                            label: '住宿', value: 'c-3'
-                        },
-                        {
-                            label: '话费', value: 'c-4'
-                        },
-                        {
-                            label: '剪发', value: 'c-5'
-                        }
-                    ]
-                },
-                {
-                    'label': "其他",
-                    'items': [
-                        {
-                            label: '交通', value: 'c-5'
-                        },
-                        {
-                            label: '餐饮', value: 'c-6'
-                        },
-                        {
-                            label: '住宿', value: 'c-7'
-                        },
-                        {
-                            label: '网吧', value: 'c-8'
-                        }
-                        ,
-                        {
-                            label: '游戏', value: 'c-9'
-                        }
-                        ,
-                        {
-                            label: '购物', value: 'c-10'
-                        }
-                        ,
-                        {
-                            label: '大保健', value: 'c-11'
-                        }
-                    ]
-                }
-            ],
-            'income': [
-                {
-                    label: '工资', value: 'i-1'
-                },
-                {
-                    label: '其他', value: 'i-2'
-                }
-            ]
-        };
+        const {type, showTip} = this.state;
         let categorys = type == 0 ? categoryMap.cost : categoryMap.income
         return (
             <div className={classes.root}>
@@ -233,20 +179,6 @@ class Add extends React.Component {
                         取消
                     </Button>
                 </div>
-                <MySnackbarContentWrapper
-                    variant="success"
-                    message="添加成功！"
-                    horizontal="center"
-                    vertical="top"
-                    ref={'tip'}
-                    open={showTip}
-                    onClose={(event, reason)=>{
-                        if (reason === 'clickaway') {
-                            return;
-                        }
-                        this.setState({showTip: false});
-                    }}
-                />
             </div>
         );
     }

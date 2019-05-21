@@ -11,15 +11,17 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import Paper from '@material-ui/core/Paper';
+import {categoryMap} from '../../config/app.js';
+import axios from 'axios';
 
 const styles = theme => ({
-    income    : {
+    income: {
         color: 'green'
     },
-    cost      : {
+    cost  : {
         color: 'red'
     },
-    bar       : {
+    bar   : {
         '& .ct-series-a': {
             '& .ct-bar': {
                 stroke: 'green'
@@ -33,117 +35,53 @@ const styles = theme => ({
     },
 });
 
-let id = 0;
-
-function createData( type, amount, category,remark) {
-    id += 1;
-    return {id, type, amount, category,remark};
-}
-
-const rows = [
-    createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData('Eclair', 262, 16.0, 24, 6.0),
-    createData('Cupcake', 305, 3.7, 67, 4.3),
-    createData('Gingerbread', 356, 16.0, 49, 3.9),
-    createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData('Eclair', 262, 16.0, 24, 6.0),
-    createData('Cupcake', 305, 3.7, 67, 4.3),
-    createData('Gingerbread', 356, 16.0, 49, 3.9),
-    createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData('Eclair', 262, 16.0, 24, 6.0),
-    createData('Cupcake', 305, 3.7, 67, 4.3),
-    createData('Gingerbread', 356, 16.0, 49, 3.9),
-    createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData('Eclair', 262, 16.0, 24, 6.0),
-    createData('Cupcake', 305, 3.7, 67, 4.3),
-    createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
-
 class Dashboard extends React.Component {
     state = {
         data       : {
-            income: [1, 2, 4, 8, 6, 23, 432, 2, 77, 13],
-            cost  : [1, 2, 4, 8, 6, 323, 22, 66, 545, 2120]
+            income: [],
+            cost  : []
         },
         day        : 30,
         page       : 0,
         rowsPerPage: 10,
-        rowslength : 50,
+        count      : 0,
+        rows       : []
     };
 
     getOptions(title) {
-        //let {data} = this.state;
-        let data = title == '收入' ? [{value: 335, name: '工资'},
-            {value: 310, name: '其他'}] : [{value: 335, name: '生活花费'},
-            {value: 310, name: '其他'}]
+        let {data} = this.state;
+        data = title == '收入' ? data.income : data.cost;
+        let legend = [];
+        for (let x in categoryMap) {
+            legend.push(categoryMap[x])
+        }
         return {
-            //backgroundColor: '#2c343c',
-
-            title: {
-                text     : title,
-                left     : 'center',
-                top      : 20,
-                textStyle: {
-                    color: '#000'
-                }
+            title  : {
+                text: title,
+                x   : 'center'
             },
-
             tooltip: {
                 trigger  : 'item',
                 formatter: "{a} <br/>{b} : {c} ({d}%)"
             },
-
-            visualMap: {
-                show   : false,
-                min    : 80,
-                max    : 600,
-                inRange: {
-                    colorLightness: [0, 1]
-                }
+            legend : {
+                orient: 'vertical',
+                left  : 'left',
+                data  : legend
             },
-            series   : [
+            series : [
                 {
-                    name     : title,
+                    name     : '访问来源',
                     type     : 'pie',
                     radius   : '55%',
                     center   : ['50%', '50%'],
-                    data     : data.sort(function (a, b) {
-                        return a.value - b.value;
-                    }),
-                    roseType : 'radius',
-                    label    : {
-                        normal: {
-                            textStyle: {
-                                color: 'rgba(0, 0, 0, 0.5)'
-                            }
-                        }
-                    },
-                    labelLine: {
-                        normal: {
-                            lineStyle: {
-                                color: 'rgba(0, 0, 0, 0.3)'
-                            },
-                            smooth   : 0.2,
-                            length   : 10,
-                            length2  : 20
-                        }
-                    },
+                    data     : data,
                     itemStyle: {
-                        normal: {
-                            color      : '#c23531',
-                            shadowBlur : 200,
-                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        emphasis: {
+                            shadowBlur   : 10,
+                            shadowOffsetX: 0,
+                            shadowColor  : 'rgba(0, 0, 0, 0.5)'
                         }
-                    },
-
-                    animationType  : 'scale',
-                    animationEasing: 'elasticOut',
-                    animationDelay : function (idx) {
-                        return Math.random() * 200;
                     }
                 }
             ]
@@ -151,26 +89,62 @@ class Dashboard extends React.Component {
     }
 
     onClick = () => {
-        this.setState({
-            data: {
-                income: [10000, 2, 4, 8, 6, 23, 432, 2, 77, 13],
-                cost  : [1, 2, 4, 8, 6, 323, 22, 66, 545, 2120]
-            }
-        })
-    }
+        console.log(1)
+    };
 
     handleChangePage = (event, page) => {
-        this.setState({page});
+        let _this = this;
+        this.setState({page}, () => {
+            _this.getData();
+        });
     };
 
     handleChangeRowsPerPage = event => {
-        this.setState({page: 0, rowsPerPage: event.target.value});
+        let _this = this;
+        this.setState({page: 0, rowsPerPage: event.target.value}, () => {
+            _this.getData();
+        });
     };
+
+    getData = () => {
+        let {page, rowsPerPage} = this.state;
+        const {date} = this.props.match.params;
+        let params = {
+            'getRows'   : 1,
+            'page'      : page + 1,
+            'size'      : rowsPerPage,
+            'getPieData': 1
+        };
+        if(date){
+            params.date = date;
+        }
+        let _this = this;
+        axios.get('http://localhost/fts3232/workspace/installer/lumen/public/api/cashNote/fetch', {params: params}, {timeout: 5000}).then(function (response) {
+            let pieData = response.data.pieData;
+            pieData.income.map((v) => {
+                return v.name = categoryMap[v.name]
+            });
+            pieData.cost.map((v) => {
+                return v.name = categoryMap[v.name]
+            });
+            _this.setState({
+                'data' : pieData,
+                'rows' : response.data.rows,
+                'count': response.data.count
+            });
+        }).catch(function (error) {
+            console.log(error);
+        });
+    };
+
+    componentDidMount() {
+        this.getData();
+    }
 
     render() {
         const {classes} = this.props;
 
-        const {rowsPerPage, page, rowslength} = this.state
+        const {rowsPerPage, page, rows, count} = this.state
         return (
             <Grid container spacing={8}>
                 <Grid item xs={6}>
@@ -192,23 +166,21 @@ class Dashboard extends React.Component {
                         <Table className={classes.table}>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>类型</TableCell>
-                                    <TableCell align="right">项目</TableCell>
+                                    <TableCell>项目</TableCell>
                                     <TableCell align="right">金额</TableCell>
                                     <TableCell align="right">备注</TableCell>
+                                    <TableCell align="right">日期</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {rows.map(row => (
-                                    <TableRow key={row.id}>
-                                        <TableCell component="th" scope="row">
-                                            {row.type == 1 ? '收入' : '支出'}
+                                    <TableRow key={row.ROW_ID}>
+                                        <TableCell component="th" scope="row">{categoryMap[row.CATEGORY]}</TableCell>
+                                        <TableCell align="right" className={row.TYPE == 1 ? classes.income : classes.cost}>
+                                            {row.TYPE == 1 ? '+' : '-'}{row.AMOUNT}
                                         </TableCell>
-                                        <TableCell align="right">{row.category}</TableCell>
-                                        <TableCell align="right" className={row.type == 1 ? classes.income : classes.cost}>
-                                            {row.type == 1 ? '+' : '-' }{row.amount}
-                                        </TableCell>
-                                        <TableCell align="right">{row.remark}</TableCell>
+                                        <TableCell align="right">{row.REMARK}</TableCell>
+                                        <TableCell align="right">{row.DATE}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -217,7 +189,7 @@ class Dashboard extends React.Component {
                                     <TablePagination
                                         rowsPerPageOptions={[5, 10, 25]}
                                         colSpan={3}
-                                        count={rowslength}
+                                        count={count}
                                         rowsPerPage={rowsPerPage}
                                         page={page}
                                         SelectProps={{

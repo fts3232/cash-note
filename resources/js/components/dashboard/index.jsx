@@ -9,7 +9,6 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import ReactEcharts from 'echarts-for-react';
 import {Link as RouterLink} from 'react-router-dom';
-import Chip from '@material-ui/core/Chip';
 import axios from 'axios';
 
 const styles = theme => ({
@@ -46,27 +45,31 @@ const styles = theme => ({
 class Dashboard extends React.Component {
     state = {
         data            : {
-            income: [1, 2, 4, 8, 6, 23, 432, 2, 77, 13],
-            cost  : [1, 2, 4, 8, 6, 323, 22, 66, 545, 2120]
+            income: [],
+            cost  : []
         },
-        queryDay        : 'all',
         grossIncome     : '0.00',
         totalExpenditure: '0.00',
     };
 
     getOptions() {
-        let { data, queryDay } = this.state;
+        let {data} = this.state;
         let date = new Date();
         let currentMonth = date.getMonth() + 1;
+        let currentYear = date.getFullYear();
         let xAxisData = [];
         for (let i = 12; i > 0; i--) {
-            xAxisData.push(currentMonth + '月')
-            console.log(currentMonth + '月');
-            currentMonth -=1;
-            if(currentMonth <= 0){
+            if (currentMonth < 10) {
+                currentMonth = '0' + currentMonth;
+            }
+            xAxisData.push(currentYear + '-' + currentMonth);
+            currentMonth -= 1;
+            if (currentMonth <= 0) {
                 currentMonth = 12;
+                currentYear -= 1;
             }
         }
+        xAxisData.reverse();
         return {
             tooltip: {
                 trigger    : 'axis',
@@ -109,42 +112,43 @@ class Dashboard extends React.Component {
         };
     }
 
-    handleClick = (day) => () => {
-        this.setState({queryDay: day},() => {
-            this.getData()
-        })
-    };
-
     getData = () => {
-        const {queryDay} = this.state;
         let params = {
-            queryDay: queryDay
+            'getGrossIncome'     : 1,
+            'getTotalExpenditure': 1,
+            'getMonthData'       : 1
         };
-        axios.get('api/user/fetch', {params: params}, {timeout: 5000}).then(function (response) {
-            this.setState(response.data.result)
+        let _this = this;
+        axios.get('http://localhost/fts3232/workspace/installer/lumen/public/api/cashNote/fetch', {params: params}, {timeout: 5000}).then(function (response) {
+            _this.setState({
+                'data'            : response.data.monthData,
+                'grossIncome'     : response.data.grossIncome,
+                'totalExpenditure': response.data.totalExpenditure,
+            });
         }).catch(function (error) {
             console.log(error);
         });
     };
 
+    onClick = (v) => {
+        this.props.history.push('/detail/' + v.name);
+    }
+
     numberFormat = (num) => {
-        return num.replace(/\d+/, function(s){
+        return num.replace(/\d+/, function (s) {
             return s.replace(/(\d)(?=(\d{3})+$)/g, '$1,')
         })
     };
 
+    componentDidMount() {
+        this.getData();
+    }
+
     render() {
         const {classes} = this.props;
-        const {queryDay, grossIncome, totalExpenditure} = this.state;
+        const {grossIncome, totalExpenditure} = this.state;
         return (
             <Grid container spacing={8}>
-                <Grid item xs={12}>
-                    <Chip label="最近1个月" color={queryDay === '1month' ? 'primary' : ''} onClick={this.handleClick('1month')} className={classes.chip}/>
-                    <Chip label="最近3个月" color={queryDay === '3month' ? 'primary' : ''} onClick={this.handleClick('3month')} className={classes.chip}/>
-                    <Chip label="最近6个月" color={queryDay === '6month' ? 'primary' : ''} onClick={this.handleClick('6month')} className={classes.chip}/>
-                    <Chip label="最近1年" color={queryDay === '1year' ? 'primary' : ''} onClick={this.handleClick('1year')} className={classes.chip}/>
-                    <Chip label="全部" color={queryDay === 'all' ? 'primary' : ''} onClick={this.handleClick('all')} className={classes.chip}/>
-                </Grid>
                 <Grid item xs={4}>
                     <Card>
                         <CardContent>
@@ -189,7 +193,7 @@ class Dashboard extends React.Component {
                             }}/>
                         </CardContent>
                         <CardActions className={classes.cardAction}>
-                            <Button size="small" color="primary" component={RouterLink} to="/fts3232/cash-note/public/detail/">
+                            <Button size="small" color="primary" component={RouterLink} to="/detail/">
                                 查看更多
                             </Button>
                         </CardActions>

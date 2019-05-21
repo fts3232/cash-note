@@ -15,7 +15,7 @@ const routes = [
                 component: DashboardComponent,
             },
             {
-                path: "/detail/",
+                path: "/detail/:date?",
                 component: DetailComponent
             },
             {

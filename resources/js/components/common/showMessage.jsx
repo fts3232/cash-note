@@ -48,24 +48,6 @@ const styles = theme => ({
 });
 
 class MySnackbarContent extends React.Component {
-    queue = [];
-    state = {
-        open: true,
-        messageInfo: queue.shift(),
-    };
-
-    constructor(props){
-        super(props)
-        MySnackbarContent.addQuene = this.addQueue.bind(this)
-    }
-
-    addQueue(type,message){
-        this.queue.push({
-            message,
-            type,
-            key: new Date().getTime(),
-        });
-    }
 
     handleClose = () => {
         let {onClose} = this.props;
@@ -74,38 +56,26 @@ class MySnackbarContent extends React.Component {
         })
     };
 
-    processQueue = () => {
-        if (this.queue.length > 0) {
-            this.setState({
-                messageInfo: this.queue.shift(),
-                open: true,
-            });
-        }
-    };
-
     handleExited = () => {
-        this.processQueue();
+        let {onExited} = this.props;
+        onExited();
     };
 
     render() {
-        const {classes, className, vertical, horizontal, ...other} = this.props;
-        const {open, messageInfo } = this.state;
-        const variant = messageInfo.type;
-        const message = messageInfo.message;
+        const {classes, className, message, variant, open, vertical, horizontal, ...other} = this.props;
         const Icon = variantIcon[variant];
         return (
             <Snackbar
-                key={messageInfo.key}
                 open={open}
-                autoHideDuration={6000}
+                autoHideDuration={1000}
                 anchorOrigin={{vertical, horizontal}}
+                onExited={this.handleExited}
+                onClick={this.handleClose}
             >
                 <SnackbarContent
                     anchorOrigin={{vertical, horizontal}}
                     className={classNames(classes[variant], className)}
                     aria-describedby="client-snackbar"
-                    onClick={this.handleClose}
-                    onExited={this.handleExited}
                     message={
                         <span id="client-snackbar" className={classes.message}>
                             <Icon className={classNames(classes.icon, classes.iconVariant)}/>
@@ -135,47 +105,71 @@ MySnackbarContent.propTypes = {
     className: PropTypes.string,
     message  : PropTypes.node,
     onClose  : PropTypes.func,
-    /*variant  : PropTypes.oneOf(['success', 'warning', 'error', 'info']).isRequired,*/
+    onExited : PropTypes.func,
+    variant  : PropTypes.oneOf(['success', 'warning', 'error', 'info']).isRequired,
 };
+MySnackbarContent.defaultProps = {
+    onClose : () => {
+
+    },
+    onExited: () => {
+
+    }
+}
 
 const MySnackbarContentWrapper = withStyles(styles)(MySnackbarContent);
 
 class MyMessage extends React.Component {
     queue = [];
+    timeout = null;
     state = {
-        open: true,
-        messageInfo: queue.shift(),
+        open       : false,
+        messageInfo: {},
     };
-    constructor(props){
-        super(props)
-        MyMessage.addQuene = this.addQueue.bind(this)
+
+    constructor(props) {
+        super(props);
+        MyMessage.addQuene = this.addQueue.bind(this);
     }
 
-    queue = [];
+    addQueue(type, message) {
+        this.queue.push({
+            message,
+            type,
+            key: new Date().getTime(),
+        });
 
-    state = {
-        open: true,
-        messageInfo: queue.shift(),
-    };
-
-    addQueue(){
-        console.log(1)
+        if (this.state.open) {
+            // immediately begin dismissing current message
+            // to start showing new one
+            this.setState({open: false});
+        } else {
+            this.processQueue();
+        }
     }
-
-    handleClose = () => {
-        let {onClose} = this.props;
-        this.setState({'open': false}, () => {
-            onClose()
-        })
-    };
 
     processQueue = () => {
-        if (queue.length > 0) {
+        let _this = this;
+        if (this.queue.length > 0) {
             this.setState({
-                messageInfo: queue.shift(),
-                open: true,
+                messageInfo: this.queue.shift(),
+                open       : true,
+            }, () => {
+                if (_this.timeout) {
+                    clearTimeout(_this.timeout)
+                }
+                _this.timeout = setTimeout(() => {
+                    _this.setState({open: false});
+                }, 5000)
             });
         }
+    };
+
+    handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.setState({open: false});
     };
 
     handleExited = () => {
@@ -183,34 +177,28 @@ class MyMessage extends React.Component {
     };
 
     render() {
-        let {onClose} = this.props;
+        const {open, messageInfo} = this.state;
         return (<MySnackbarContentWrapper
             horizontal="center"
             vertical="top"
-            onClose={onClose}
+            variant={messageInfo.type}
+            message={messageInfo.message}
+            open={open}
+            onClose={this.handleClose}
+            onExited={this.handleExited}
         />);
     }
-
 }
 
 const showMessage = (type, message) => {
     let div = '';
-    open = true;
     if (!document.getElementById("MyMessage")) {
         div = document.createElement('div');
         div.setAttribute('id', 'MyMessage');
         document.body.appendChild(div);
-        ReactDOM.render(<MyMessage
-            onClose={(event, reason) => {
-                setTimeout(()=>{
-                    if (document.getElementById("MyMessage")) {
-                        document.getElementById('MyMessage').remove();
-                    }
-                },500)
-            }}
-        />, div);
+        ReactDOM.render(<MyMessage/>, div);
     }
-    MyMessage.addQuene(type,message)
+    MyMessage.addQuene(type, message)
 }
 
 
