@@ -65,8 +65,11 @@ class Dashboard extends React.Component {
                 formatter: "{a} <br/>{b} : {c} ({d}%)"
             },
             legend : {
+                type: 'scroll',
                 orient: 'vertical',
-                left  : 'left',
+                right: 10,
+                top: 20,
+                bottom: 20,
                 data  : legend
             },
             series : [
