@@ -5,6 +5,10 @@ import TerserPlugin from 'terser-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
+import HappyPack from 'happypack';
+import os from 'os';
+
+const happyThreadPool = HappyPack.ThreadPool({size: os.cpus().length});
 //定义了一些文件夹的路径
 let JS_PATH = path.resolve(path.resolve(__dirname), 'resources/js');
 let TEMPLATE_PATH = path.resolve(path.resolve(__dirname), 'resources/html');
@@ -40,54 +44,25 @@ let config = {
         historyApiFallback: true,
         hot               : true,
         inline            : true,
-        compress: true,
-        watchContentBase: true,
-        open: true
+        compress          : true,
+        watchContentBase  : true,
+        open              : true
     },
     module      : {
         rules: [
             {
                 test: /\.css$/,
-                use : [
-                    {
-                        loader: "style-loader/url"
-                    },
-                    {
-                        loader : "file-loader",
-                        options: {
-                            name      : '[name].[ext]?v=[hash]',
-                            outputPath: 'css/build'
-                        },
-                    },
-                    {
-                        loader: 'postcss-loader'
-                    }
-                ]
+                use : {
+                    loader: 'happypack/loader?id=css',
+                }
             },
             {
                 test   : /\.(js|jsx)$/,
                 exclude: /(node_modules|bower_components)/,
                 include: JS_PATH,
                 use    : {
-                    loader : 'babel-loader',
-                    options: {
-                        presets: [
-                            [
-                                '@babel/preset-env',
-                                {
-                                    "targets": {
-                                        "browsers": ["last 2 versions", "ie >= 9"]
-                                    }
-                                }
-                            ],
-                            ["@babel/preset-react"]
-                        ],
-                        plugins: [
-                            '@babel/plugin-syntax-dynamic-import',
-                            '@babel/plugin-proposal-class-properties'
-                        ],
-                    }
-                },
+                    loader: 'happypack/loader?id=babel',
+                }
             }
         ]
     },
@@ -106,6 +81,7 @@ let config = {
         'superagent'                   : 'superagent',
         "react"                        : 'React',
         'react-dom'                    : 'ReactDOM',
+        'echarts'                      : 'echarts',
         //'react-router'                 : 'ReactRouter',
         //'react-router-dom'             : 'ReactRouterDOM',
         //'react-router-config'          : 'ReactRouterConfig',
@@ -141,6 +117,59 @@ let config = {
             filename     : '[name].css',
             chunkFilename: '[id].css',
         }),
+        new HappyPack({
+            id        : 'babel',
+            //如何处理  用法和loader 的配置一样
+            loaders   : [{
+                loader : 'babel-loader',
+                options: {
+                    cacheDirectory: true,
+                    presets       : [
+                        [
+                            '@babel/preset-env',
+                            {
+                                "targets": {
+                                    "browsers": ["last 2 versions", "ie >= 9"]
+                                }
+                            }
+                        ],
+                        ["@babel/preset-react"]
+                    ],
+                    plugins       : [
+                        '@babel/plugin-syntax-dynamic-import',
+                        '@babel/plugin-proposal-class-properties',
+                        '@babel/plugin-transform-runtime'
+                    ],
+                }
+            }],
+            //共享进程池
+            threadPool: happyThreadPool,
+            //允许 HappyPack 输出日志
+            verbose   : true,
+        }),
+        new HappyPack({
+            id        : 'css',
+            //如何处理  用法和loader 的配置一样
+            loaders   : [
+                {
+                    loader: "style-loader/url"
+                },
+                {
+                    loader : "file-loader",
+                    options: {
+                        name      : '[name].[ext]?v=[hash]',
+                        outputPath: 'css/build'
+                    },
+                },
+                {
+                    loader: 'postcss-loader'
+                }
+            ],
+            //共享进程池
+            threadPool: happyThreadPool,
+            //允许 HappyPack 输出日志
+            verbose   : true,
+        })
     ],
     optimization: {
         runtimeChunk: {
@@ -151,23 +180,23 @@ let config = {
             new OptimizeCSSAssetsPlugin()
         ],
         splitChunks : {
-            chunks                : 'async',
-            minSize               : 30000,
-            maxSize               : 0,
-            minChunks             : 1,
-            maxAsyncRequests      : 5,
-            maxInitialRequests    : 3,
-            automaticNameDelimiter: '~',
-            name                  : true,
-            cacheGroups           : {
+            cacheGroups: {
                 vendors: {
-                    test    : /[\\/]node_modules[\\/]/,
-                    priority: -10
+                    test     : /[\\/]node_modules[\\/]/,
+                    name     : 'vendors',
+                    minSize  : 30000,
+                    minChunks: 1,
+                    chunks   : 'initial',
+                    priority : 1 // 该配置项是设置处理的优先级，数值越大越优先处理
                 },
-                default: {
-                    minChunks         : 2,
-                    priority          : -20,
-                    reuseExistingChunk: true
+                commons: {
+                    test              : /[\\/]src[\\/]common[\\/]/,
+                    name              : 'commons',
+                    minSize           : 30000,
+                    minChunks         : 3,
+                    chunks            : 'initial',
+                    priority          : -1,
+                    reuseExistingChunk: true // 这个配置允许我们使用已经存在的代码块
                 }
             }
         }
