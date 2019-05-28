@@ -12,7 +12,7 @@ import amber from '@material-ui/core/colors/amber';
 import IconButton from '@material-ui/core/IconButton';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 const variantIcon = {
     success: CheckCircleIcon,
@@ -66,34 +66,34 @@ class MySnackbarContent extends React.Component {
         const Icon = variantIcon[variant];
         return (
             <Snackbar
-                open={open}
-                autoHideDuration={1000}
-                anchorOrigin={{vertical, horizontal}}
-                onExited={this.handleExited}
-                onClick={this.handleClose}
+                open={ open }
+                autoHideDuration={ 1000 }
+                anchorOrigin={ {vertical, horizontal} }
+                onExited={ this.handleExited }
+                onClick={ this.handleClose }
             >
                 <SnackbarContent
-                    anchorOrigin={{vertical, horizontal}}
-                    className={classNames(classes[variant], className)}
+                    anchorOrigin={ {vertical, horizontal} }
+                    className={ classNames(classes[variant], className) }
                     aria-describedby="client-snackbar"
                     message={
-                        <span id="client-snackbar" className={classes.message}>
-                            <Icon className={classNames(classes.icon, classes.iconVariant)}/>
-                            {message}
+                        <span id="client-snackbar" className={ classes.message }>
+                            <Icon className={ classNames(classes.icon, classes.iconVariant) }/>
+                            { message }
                         </span>
                     }
-                    action={[
+                    action={ [
                         <IconButton
                             key="close"
                             aria-label="Close"
                             color="inherit"
-                            className={classes.close}
-                            onClick={this.handleClose}
+                            className={ classes.close }
+                            onClick={ this.handleClose }
                         >
-                            <CloseIcon className={classes.icon}/>
+                            <CloseIcon className={ classes.icon }/>
                         </IconButton>,
-                    ]}
-                    {...other}
+                    ] }
+                    { ...other }
                 />
             </Snackbar>
         );
@@ -181,11 +181,11 @@ class MyMessage extends React.Component {
         return (<MySnackbarContentWrapper
             horizontal="center"
             vertical="top"
-            variant={messageInfo.type}
-            message={messageInfo.message}
-            open={open}
-            onClose={this.handleClose}
-            onExited={this.handleExited}
+            variant={ messageInfo.type }
+            message={ messageInfo.message }
+            open={ open }
+            onClose={ this.handleClose }
+            onExited={ this.handleExited }
         />);
     }
 }

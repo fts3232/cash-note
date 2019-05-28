@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -10,10 +10,10 @@ import FormGroup from '@material-ui/core/FormGroup';
 import TextField from '@material-ui/core/TextField';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import Button from '@material-ui/core/Button';
-import {Link as RouterLink} from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import axios from 'axios';
-import showMessage from '../common/showMessage.jsx';
-import {selectCategoryMap as categoryMap} from '../../config/app.js';
+import showMessage from 'fts/components/showMessage';
+import { selectCategoryMap as categoryMap } from 'fts/config/app.js';
 import Qs from 'qs';
 
 const styles = theme => ({
@@ -30,7 +30,7 @@ const styles = theme => ({
         margin: theme.spacing.unit,
     },
     radioGroup : {
-        margin       : `${theme.spacing.unit}px 0`,
+        margin       : `${ theme.spacing.unit }px 0`,
         flexDirection: 'row'
     },
 });
@@ -96,86 +96,86 @@ class Add extends React.Component {
         const {type, showTip} = this.state;
         let categorys = type == 0 ? categoryMap.cost : categoryMap.income
         return (
-            <div className={classes.root}>
+            <div className={ classes.root }>
                 <FormGroup>
                     <FormControl component="fieldset">
                         <FormLabel component="legend">日期</FormLabel>
                         <TextField
                             id="date"
                             type="date"
-                            defaultValue={this.state.date}
-                            className={classes.textField}
-                            InputLabelProps={{
+                            defaultValue={ this.state.date }
+                            className={ classes.textField }
+                            InputLabelProps={ {
                                 shrink: true,
-                            }}
-                            onChange={this.handleChange('date')}
+                            } }
+                            onChange={ this.handleChange('date') }
                         />
                     </FormControl>
-                    <FormControl component="fieldset" className={classes.formControl}>
+                    <FormControl component="fieldset" className={ classes.formControl }>
                         <FormLabel component="legend">类型</FormLabel>
                         <RadioGroup
                             aria-label="类型"
                             name="type"
-                            className={classes.radioGroup}
-                            defaultValue={'0'}
-                            value={this.state.value}
-                            onChange={this.handleChange('type')}
+                            className={ classes.radioGroup }
+                            defaultValue={ '0' }
+                            value={ this.state.value }
+                            onChange={ this.handleChange('type') }
                         >
-                            <FormControlLabel value="0" control={<Radio/>} label="支出"/>
-                            <FormControlLabel value="1" control={<Radio/>} label="收入"/>
+                            <FormControlLabel value="0" control={ <Radio/> } label="支出"/>
+                            <FormControlLabel value="1" control={ <Radio/> } label="收入"/>
                         </RadioGroup>
                     </FormControl>
-                    <FormControl component="fieldset" className={classes.formControl}>
+                    <FormControl component="fieldset" className={ classes.formControl }>
                         <FormLabel component="legend">项目</FormLabel>
                         <NativeSelect
-                            value={this.state.category}
-                            onChange={this.handleChange('category')}
+                            value={ this.state.category }
+                            onChange={ this.handleChange('category') }
                             name="category"
-                            className={classes.textField}
+                            className={ classes.textField }
                         >
-                            {categorys.map((category) => {
+                            { categorys.map((category) => {
                                 if (typeof category.items != 'undefined') {
                                     return (
-                                        <optgroup label={category.label}>
-                                            {category.items.map((items) => {
-                                                return (<option value={items.value}>{items.label}</option>)
-                                            })}
+                                        <optgroup label={ category.label }>
+                                            { category.items.map((items) => {
+                                                return (<option value={ items.value }>{ items.label }</option>)
+                                            }) }
                                         </optgroup>
                                     )
                                 } else {
-                                    return (<option value={category.value}>{category.label}</option>)
+                                    return (<option value={ category.value }>{ category.label }</option>)
                                 }
-                            })}
+                            }) }
                         </NativeSelect>
                     </FormControl>
-                    <FormControl component="fieldset" className={classes.formControl}>
+                    <FormControl component="fieldset" className={ classes.formControl }>
                         <FormLabel component="legend">金额</FormLabel>
                         <TextField
                             id="standard-name"
-                            className={classes.textField}
-                            value={this.state.amount}
+                            className={ classes.textField }
+                            value={ this.state.amount }
                             placeholder="0.00"
                             type="number"
-                            onChange={this.handleChange('amount')}
+                            onChange={ this.handleChange('amount') }
                         />
                     </FormControl>
-                    <FormControl component="fieldset" className={classes.formControl}>
+                    <FormControl component="fieldset" className={ classes.formControl }>
                         <FormLabel component="legend">备注</FormLabel>
                         <TextField
                             multiline
                             rows="4"
                             placeholder="请输入备注"
-                            value={this.state.remark}
-                            onChange={this.handleChange('remark')}
-                            className={classes.textField}
+                            value={ this.state.remark }
+                            onChange={ this.handleChange('remark') }
+                            className={ classes.textField }
                         />
                     </FormControl>
                 </FormGroup>
-                <div style={{textAlign: 'right'}}>
-                    <Button variant="contained" color="primary" component="span" className={classes.button} onClick={this.post}>
+                <div style={ {textAlign: 'right'} }>
+                    <Button variant="contained" color="primary" component="span" className={ classes.button } onClick={ this.post }>
                         添加
                     </Button>
-                    <Button variant="contained" component="span" className={classes.button} component={RouterLink} to="/">
+                    <Button variant="contained" component="span" className={ classes.button } component={ RouterLink } to="/">
                         取消
                     </Button>
                 </div>

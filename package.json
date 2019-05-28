@@ -16,6 +16,7 @@
     "babel-loader": "^8.0.5",
     "babel-plugin-import": "^1.11.0",
     "clean-webpack-plugin": "^0.1.16",
+    "copy-webpack-plugin": "^5.0.3",
     "css-loader": "^0.28.7",
     "file-loader": "^3.0.1",
     "happypack": "^5.0.1",

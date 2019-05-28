@@ -12,44 +12,42 @@ import { Link as RouterLink } from 'react-router-dom'
 
 
 const styles = {
-    grow: {
+    grow      : {
         flexGrow: 1,
     },
     menuButton: {
-        marginLeft: -12,
+        marginLeft : -12,
         marginRight: 20,
     }
 };
 
 class Header extends React.Component {
-    state = {
-
-    };
+    state = {};
 
     goBack = () => {
-        const { history } = this.props;
+        const {history} = this.props;
         history.goBack()
     }
 
     render() {
-        const { classes, showBack } = this.props;
+        const {classes, showBack} = this.props;
         return (
             <AppBar position="static">
                 <Toolbar>
-                    {showBack ? (
-                        <IconButton className={classes.menuButton} color="inherit" aria-label="add" onClick={this.goBack}>
-                            <ReplyIcon />
+                    { showBack ? (
+                        <IconButton className={ classes.menuButton } color="inherit" aria-label="add" onClick={ this.goBack }>
+                            <ReplyIcon/>
                         </IconButton>
                     ) : (
-                        <IconButton className={classes.menuButton} color="inherit" aria-label="add" component={RouterLink} to="/">
-                            <HomeIcon />
+                        <IconButton className={ classes.menuButton } color="inherit" aria-label="add" component={ RouterLink } to="/">
+                            <HomeIcon/>
                         </IconButton>
-                    )}
-                    <Typography variant="h6" color="inherit" className={classes.grow}>
+                    ) }
+                    <Typography variant="h6" color="inherit" className={ classes.grow }>
                         记账本
                     </Typography>
-                    <IconButton className={classes.menuButton} color="inherit" aria-label="add" component={RouterLink} to="/add/">
-                        <AddIcon />
+                    <IconButton className={ classes.menuButton } color="inherit" aria-label="add" component={ RouterLink } to="/add/">
+                        <AddIcon/>
                     </IconButton>
                 </Toolbar>
             </AppBar>
@@ -58,8 +56,8 @@ class Header extends React.Component {
 }
 
 Header.propTypes = { //isRequired  代表该参数是必须的
-    showBack:PropTypes.bool,
-    classes: PropTypes.oneOfType([
+    showBack: PropTypes.bool,
+    classes : PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.array,
         PropTypes.object

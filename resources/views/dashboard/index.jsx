@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import ReactEcharts from 'echarts-for-react';
-import {Link as RouterLink} from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import axios from 'axios';
 
 const styles = theme => ({
@@ -16,20 +16,20 @@ const styles = theme => ({
         fontSize: 14,
     },
     income    : {
-        color: 'green'
+        color: theme.income
     },
     cost      : {
-        color: 'red'
+        color: theme.cost
     },
     bar       : {
         '& .ct-series-a': {
             '& .ct-bar': {
-                stroke: 'green'
+                stroke: theme.income
             }
         },
         '& .ct-series-b': {
             '& .ct-bar': {
-                stroke: 'red'
+                stroke: theme.cost
             }
         }
     },
@@ -41,6 +41,7 @@ const styles = theme => ({
         marginRight: '5px'
     }
 });
+
 
 class Dashboard extends React.Component {
     state = {
@@ -110,7 +111,7 @@ class Dashboard extends React.Component {
                 }
             ]
         };
-    }
+    };
 
     getData = () => {
         let params = {
@@ -132,7 +133,7 @@ class Dashboard extends React.Component {
 
     onClick = (v) => {
         this.props.history.push('/detail/' + v.name);
-    }
+    };
 
     numberFormat = (num) => {
         return num.replace(/\d+/, function (s) {
@@ -148,52 +149,52 @@ class Dashboard extends React.Component {
         const {classes} = this.props;
         const {grossIncome, totalExpenditure} = this.state;
         return (
-            <Grid container spacing={8}>
-                <Grid item xs={4}>
+            <Grid container spacing={ 8 }>
+                <Grid item xs={ 4 }>
                     <Card>
                         <CardContent>
-                            <Typography className={classes.title} color="textSecondary" gutterBottom>
+                            <Typography className={ classes.title } color="textSecondary" gutterBottom>
                                 总收入
                             </Typography>
-                            <Typography variant="h5" component="h5" className={classes.income}>
-                                {this.numberFormat(grossIncome)}
+                            <Typography variant="h5" component="h5" className={ classes.income }>
+                                { this.numberFormat(grossIncome) }
                             </Typography>
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={ 4 }>
                     <Card>
                         <CardContent>
-                            <Typography className={classes.title} color="textSecondary" gutterBottom>
+                            <Typography className={ classes.title } color="textSecondary" gutterBottom>
                                 总支出
                             </Typography>
-                            <Typography variant="h5" component="h2" className={classes.cost}>
-                                {this.numberFormat(totalExpenditure)}
+                            <Typography variant="h5" component="h2" className={ classes.cost }>
+                                { this.numberFormat(totalExpenditure) }
                             </Typography>
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={ 4 }>
                     <Card>
                         <CardContent>
-                            <Typography className={classes.title} color="textSecondary" gutterBottom>
+                            <Typography className={ classes.title } color="textSecondary" gutterBottom>
                                 净值
                             </Typography>
-                            <Typography variant="h5" component="h2" className={classes.income}>
-                                {this.numberFormat((grossIncome - totalExpenditure).toFixed(2))}
+                            <Typography variant="h5" component="h2" className={ classes.income }>
+                                { this.numberFormat((grossIncome - totalExpenditure).toFixed(2)) }
                             </Typography>
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={ 12 }>
                     <Card>
                         <CardContent>
-                            <ReactEcharts option={this.getOptions()} style={{height: '500px'}} onEvents={{
+                            <ReactEcharts option={ this.getOptions() } style={ {height: '500px'} } onEvents={ {
                                 'click': this.onClick,
-                            }}/>
+                            } }/>
                         </CardContent>
-                        <CardActions className={classes.cardAction}>
-                            <Button size="small" color="primary" component={RouterLink} to="/detail/">
+                        <CardActions className={ classes.cardAction }>
+                            <Button size="small" color="primary" component={ RouterLink } to="/detail/">
                                 查看更多
                             </Button>
                         </CardActions>

@@ -76,4 +76,4 @@ const selectCategoryMap = {
         }
     ]
 };
-export {categoryMap, selectCategoryMap};
+export { categoryMap, selectCategoryMap };

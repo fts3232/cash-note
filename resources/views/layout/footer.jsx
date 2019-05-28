@@ -8,9 +8,7 @@ import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 
 
 const styles = {
-    root: {
-
-    },
+    root: {},
 };
 
 class Footer extends React.Component {
@@ -19,20 +17,21 @@ class Footer extends React.Component {
     };
 
     handleChange = (event, value) => {
-        this.setState({ value });
+        this.setState({value});
     };
+
     render() {
-        const { classes } = this.props;
-        const { value } = this.state;
+        const {classes} = this.props;
+        const {value} = this.state;
         return (
             <BottomNavigation
-                value={value}
-                onChange={this.handleChange}
+                value={ value }
+                onChange={ this.handleChange }
                 showLabels
-                className={classes.root}
+                className={ classes.root }
             >
-                <BottomNavigationAction label="图表" icon={<PieChartIcon />} />
-                <BottomNavigationAction label="明细" icon={<DescriptionIcon />} />
+                <BottomNavigationAction label="图表" icon={ <PieChartIcon/> }/>
+                <BottomNavigationAction label="明细" icon={ <DescriptionIcon/> }/>
             </BottomNavigation>
         );
     }
@@ -46,4 +45,4 @@ Footer.propTypes = { //isRequired  代表该参数是必须的
     ]),
 };
 
-export default  withStyles(styles)(Footer);
+export default withStyles(styles)(Footer);

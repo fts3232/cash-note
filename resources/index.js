@@ -5,12 +5,13 @@ import { renderRoutes } from "react-router-config";
 import { BrowserRouter } from "react-router-dom";
 import routes from './routes';
 import reducers from './reducers'
+import React from "react";
 
 let store = createStore(reducers);
 
 ReactDOM.render(
-    <Provider store={store}>
+    <Provider store={ store }>
         <BrowserRouter>
-            {renderRoutes(routes)}
+            { renderRoutes(routes) }
         </BrowserRouter>
     </Provider>, document.querySelector("#app"));

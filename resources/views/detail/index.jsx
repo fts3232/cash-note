@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import ReactEcharts from 'echarts-for-react';
 import Table from '@material-ui/core/Table';
@@ -11,25 +11,25 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import Paper from '@material-ui/core/Paper';
-import {categoryMap} from '../../config/app.js';
+import { categoryMap } from 'fts/config/app.js';
 import axios from 'axios';
 
 const styles = theme => ({
     income: {
-        color: 'green'
+        color: theme.income
     },
     cost  : {
-        color: 'red'
+        color: theme.cost
     },
     bar   : {
         '& .ct-series-a': {
             '& .ct-bar': {
-                stroke: 'green'
+                stroke: theme.income
             }
         },
         '& .ct-series-b': {
             '& .ct-bar': {
-                stroke: 'red'
+                stroke: theme.cost
             }
         }
     },
@@ -65,10 +65,10 @@ class Dashboard extends React.Component {
                 formatter: "{a} <br/>{b} : {c} ({d}%)"
             },
             legend : {
-                type: 'scroll',
+                type  : 'scroll',
                 orient: 'vertical',
-                right: 10,
-                top: 20,
+                right : 10,
+                top   : 20,
                 bottom: 20,
                 data  : legend
             },
@@ -118,7 +118,7 @@ class Dashboard extends React.Component {
             'size'      : rowsPerPage,
             'getPieData': 1
         };
-        if(date){
+        if (date) {
             params.date = date;
         }
         let _this = this;
@@ -149,24 +149,24 @@ class Dashboard extends React.Component {
 
         const {rowsPerPage, page, rows, count} = this.state
         return (
-            <Grid container spacing={8}>
-                <Grid item xs={6}>
+            <Grid container spacing={ 8 }>
+                <Grid item xs={ 6 }>
                     <Paper>
-                        <ReactEcharts option={this.getOptions('收入')} style={{height: '300px'}} onEvents={{
+                        <ReactEcharts option={ this.getOptions('收入') } style={ {height: '300px'} } onEvents={ {
                             'click': this.onClick,
-                        }}/>
+                        } }/>
                     </Paper>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={ 6 }>
                     <Paper>
-                        <ReactEcharts option={this.getOptions('支出')} style={{height: '300px'}} onEvents={{
+                        <ReactEcharts option={ this.getOptions('支出') } style={ {height: '300px'} } onEvents={ {
                             'click': this.onClick,
-                        }}/>
+                        } }/>
                     </Paper>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={ 12 }>
                     <Paper>
-                        <Table className={classes.table}>
+                        <Table className={ classes.table }>
                             <TableHead>
                                 <TableRow>
                                     <TableCell>项目</TableCell>
@@ -176,30 +176,30 @@ class Dashboard extends React.Component {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {rows.map(row => (
-                                    <TableRow key={row.ROW_ID}>
-                                        <TableCell component="th" scope="row">{categoryMap[row.CATEGORY]}</TableCell>
-                                        <TableCell align="right" className={row.TYPE == 1 ? classes.income : classes.cost}>
-                                            {row.TYPE == 1 ? '+' : '-'}{row.AMOUNT}
+                                { rows.map(row => (
+                                    <TableRow key={ row.ROW_ID }>
+                                        <TableCell component="th" scope="row">{ categoryMap[row.CATEGORY] }</TableCell>
+                                        <TableCell align="right" className={ row.TYPE == 1 ? classes.income : classes.cost }>
+                                            { row.TYPE == 1 ? '+' : '-' }{ row.AMOUNT }
                                         </TableCell>
-                                        <TableCell align="right">{row.REMARK}</TableCell>
-                                        <TableCell align="right">{row.DATE}</TableCell>
+                                        <TableCell align="right">{ row.REMARK }</TableCell>
+                                        <TableCell align="right">{ row.DATE }</TableCell>
                                     </TableRow>
-                                ))}
+                                )) }
                             </TableBody>
                             <TableFooter>
                                 <TableRow>
                                     <TablePagination
-                                        rowsPerPageOptions={[5, 10, 25]}
-                                        colSpan={3}
-                                        count={count}
-                                        rowsPerPage={rowsPerPage}
-                                        page={page}
-                                        SelectProps={{
+                                        rowsPerPageOptions={ [5, 10, 25] }
+                                        colSpan={ 3 }
+                                        count={ count }
+                                        rowsPerPage={ rowsPerPage }
+                                        page={ page }
+                                        SelectProps={ {
                                             native: true,
-                                        }}
-                                        onChangePage={this.handleChangePage}
-                                        onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                                        } }
+                                        onChangePage={ this.handleChangePage }
+                                        onChangeRowsPerPage={ this.handleChangeRowsPerPage }
                                     />
                                 </TableRow>
                             </TableFooter>

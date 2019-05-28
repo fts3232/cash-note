@@ -5,15 +5,18 @@ import TerserPlugin from 'terser-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
+import CopyPlugin from 'copy-webpack-plugin';
 import HappyPack from 'happypack';
 import os from 'os';
 
 const happyThreadPool = HappyPack.ThreadPool({size: os.cpus().length});
 //定义了一些文件夹的路径
-let JS_PATH = path.resolve(path.resolve(__dirname), 'resources/js');
-let TEMPLATE_PATH = path.resolve(path.resolve(__dirname), 'resources/html');
-let PUBLIC_PATH = path.resolve(path.resolve(__dirname), 'public');
-let config = {
+const resourcesPath = path.resolve(path.resolve(__dirname), 'resources');
+const templatePath = path.resolve(resourcesPath, 'template');
+
+const publicPath = path.resolve(path.resolve(__dirname), 'public');
+
+const config = {
     /*
     source-map  在一个单独的文件中产生一个完整且功能完全的文件。这个文件具有最好的source map，但是它会减慢打包文件的构建速度；
     cheap-module-source-map 在一个单独的文件中生成一个不带列映射的map，不带列映射提高项目构建速度，但是也使得浏览器开发者工具只能对应到具体的行，不能对应到具体的列（符号），会对调试造成不便；
@@ -23,17 +26,17 @@ let config = {
     //devtool: 'eval-source-map',//配置生成Source Maps，选择合适的选项
     //项目的文件夹 可以直接用文件夹名称 默认会找index.js 也可以确定是哪个文件名字
     entry       : {
-        'app': JS_PATH + '/index.js',
+        'app': resourcesPath + '/index.js',
     },
     resolve     : {
         extensions: ['.js', '.jsx'],
         alias     : {
-            //'vue$': 'vue/dist/vue.js' // 'vue/dist/vue.common.js' for webpack 1
+            'fts': resourcesPath,
         }
     },
     //输出的文件名 合并以后的js会命名为bundle.js
     output      : {
-        path         : PUBLIC_PATH,
+        path         : publicPath,
         filename     : 'js/build/[name].js?v=[hash]',
         chunkFilename: 'js/build/[name].bundle.js?v=[chunkhash]',
         publicPath   : '/',
@@ -50,16 +53,16 @@ let config = {
     },
     module      : {
         rules: [
-            {
+            /*{
                 test: /\.css$/,
                 use : {
                     loader: 'happypack/loader?id=css',
                 }
-            },
+            },*/
             {
                 test   : /\.(js|jsx)$/,
                 exclude: /(node_modules|bower_components)/,
-                include: JS_PATH,
+                include: resourcesPath,
                 use    : {
                     loader: 'happypack/loader?id=babel',
                 }
@@ -82,6 +85,7 @@ let config = {
         "react"                        : 'React',
         'react-dom'                    : 'ReactDOM',
         'echarts'                      : 'echarts',
+        '@material-ui'                 : 'MaterialUI',
         //'react-router'                 : 'ReactRouter',
         //'react-router-dom'             : 'ReactRouterDOM',
         //'react-router-config'          : 'ReactRouterConfig',
@@ -103,13 +107,19 @@ let config = {
     },
     plugins     : [
         new CleanWebpackPlugin(['js/build', 'index.html', 'css/build'], {
-            root   : PUBLIC_PATH,
+            root   : publicPath,
             verbose: true,
             dry    : false
         }),
         new HtmlWebpackPlugin({
-            template: TEMPLATE_PATH + '/index.html',
-            filename: PUBLIC_PATH + '/index.html'
+            title   : '记账本',
+            template: templatePath + '/index.html',
+            filename: publicPath + '/index.html',
+            meta    : {
+                viewport   : 'minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no',
+                keyword    : 'keyword',
+                description: 'description'
+            }
         }),
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output
@@ -138,7 +148,15 @@ let config = {
                     plugins       : [
                         '@babel/plugin-syntax-dynamic-import',
                         '@babel/plugin-proposal-class-properties',
-                        '@babel/plugin-transform-runtime'
+                        '@babel/plugin-transform-runtime',
+                        [
+                            'babel-plugin-import',
+                            {
+                                libraryName            : '@material-ui/icons',
+                                libraryDirectory       : 'esm', // or '' if your bundler does not support ES modules
+                                camel2DashComponentName: false,
+                            },
+                        ]
                     ],
                 }
             }],
@@ -147,7 +165,7 @@ let config = {
             //允许 HappyPack 输出日志
             verbose   : true,
         }),
-        new HappyPack({
+        /*new HappyPack({
             id        : 'css',
             //如何处理  用法和loader 的配置一样
             loaders   : [
@@ -169,7 +187,10 @@ let config = {
             threadPool: happyThreadPool,
             //允许 HappyPack 输出日志
             verbose   : true,
-        })
+        }),*/
+        new CopyPlugin([
+            {from: resourcesPath + '/assets/.htaccess', to: publicPath},
+        ]),
     ],
     optimization: {
         runtimeChunk: {
