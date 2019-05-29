@@ -164,7 +164,14 @@ const config = {
                         ]
                     ],
                 }
-            }],
+            },{
+                loader: 'eslint-loader',
+                options: {
+                    // some options
+                    fix: true,
+                },
+            },
+            ],
             //共享进程池
             threadPool: happyThreadPool,
             //允许 HappyPack 输出日志
@@ -196,11 +203,11 @@ const config = {
         new CopyPlugin([
             {from: resourcesPath + '/assets/.htaccess', to: publicPath},
         ]),
-        new BundleAnalyzerPlugin({
+        /*new BundleAnalyzerPlugin({
             analyzerMode     : 'disabled',
             openAnalyzer     : false,
             generateStatsFile: true,
-        }),
+        }),*/
         new CompressionWebpackPlugin({
             algorithm: 'gzip',
             test     : /\.(js|css)$/,

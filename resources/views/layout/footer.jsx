@@ -38,11 +38,7 @@ class Footer extends React.Component {
 }
 
 Footer.propTypes = { //isRequired  代表该参数是必须的
-    classes: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.array,
-        PropTypes.object
-    ]),
+    classes  : PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(Footer);

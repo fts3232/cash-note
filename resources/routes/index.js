@@ -1,4 +1,4 @@
-import loadable from '@loadable/component'
+import loadable from '@loadable/component';
 import Layout from 'fts/views/layout';
 
 const AddComponent = loadable(() => import('fts/views/add'));
@@ -10,18 +10,18 @@ const routes = [
         component: Layout,
         routes   : [
             {
-                path     : "/",
+                path     : '/',
                 exact    : true,
-                component: DashboardComponent,
+                component: DashboardComponent
             },
             {
-                path     : "/detail/:date?",
+                path     : '/detail/:date?',
                 component: DetailComponent
             },
             {
-                path     : "/add/",
+                path     : '/add/',
                 component: AddComponent
-            },
+            }
         ]
     }
 ];

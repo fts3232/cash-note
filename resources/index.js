@@ -1,17 +1,17 @@
-import ReactDOM from "react-dom";
+import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import { renderRoutes } from "react-router-config";
-import { BrowserRouter } from "react-router-dom";
+import { renderRoutes } from 'react-router-config';
+import { BrowserRouter } from 'react-router-dom';
+import React from 'react';
 import routes from './routes';
-import reducers from './reducers'
-import React from "react";
+import reducers from './reducers';
 
-let store = createStore(reducers);
+const store = createStore(reducers);
 
 ReactDOM.render(
-    <Provider store={ store }>
+    <Provider store={store}>
         <BrowserRouter>
             { renderRoutes(routes) }
         </BrowserRouter>
-    </Provider>, document.querySelector("#app"));
+    </Provider>, document.querySelector('#app'));

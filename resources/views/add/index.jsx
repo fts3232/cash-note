@@ -17,56 +17,55 @@ import { selectCategoryMap as categoryMap } from 'fts/config/app.js';
 import Qs from 'qs';
 
 const styles = theme => ({
-    root       : {
+    root: {
         margin: '20px 24px 0 24px'
     },
     formControl: {
-        margin: '6px 0',
+        margin: '6px 0'
     },
-    textField  : {
+    textField: {
         margin: '10px 0'
     },
-    button     : {
-        margin: theme.spacing.unit,
+    button: {
+        margin: theme.spacing.unit
     },
-    radioGroup : {
+    radioGroup: {
         margin       : `${ theme.spacing.unit }px 0`,
         flexDirection: 'row'
-    },
+    }
 });
 
-let date = new Date();
+const date = new Date();
 let month = date.getMonth() + 1;
-month = month < 10 ? '0' + month : month;
-let year = date.getFullYear();
+month = month < 10 ? `0${  month }` : month;
+const year = date.getFullYear();
 let day = date.getDate();
-day = day < 10 ? '0' + day : day;
+day = day < 10 ? `0${  day }` : day;
 
 class Add extends React.Component {
     state = {
-        type       : 0,
-        amount     : '',
-        category   : 'c-1',
-        remark     : '',
-        categoryMap: [],
-        date       : year + '-' + month + '-' + day,
-        submission : false
+        type      : 0,
+        amount    : '',
+        category  : 'c-1',
+        remark    : '',
+        date      : `${ year }-${ month }-${ day }`,
+        submission: false
     };
 
     handleChange = name => event => {
-        let value = event.target.value;
-        if (name == 'type') {
-            this.setState({'category': value == 0 ? 'c-1' : 'i-1'});
+        const { value } = event.target;
+        if (name === 'type') {
+            this.setState({ 'category': value === 0 ? 'c-1' : 'i-1' });
         }
-        this.setState({[name]: value});
+        this.setState({ [name]: value });
     };
 
     post = () => {
-        const {submission} = this.state;
-        const {state} = this;
+        const { submission } = this.state;
+        const { state } = this;
         const _this = this;
         if (!submission) {
-            this.setState({'submission': true}, () => {
+            this.setState({ 'submission': true }, () => {
                 let data = {
                     type    : state.type,
                     amount  : state.amount,
@@ -75,107 +74,107 @@ class Add extends React.Component {
                     date    : state.date
                 };
                 data = Qs.stringify(data);
-                axios.post('http://localhost/fts3232/workspace/installer/lumen/public/api/cashNote/add', data, {timeout: 5000}).then(function (response) {
+                axios.post('http://localhost/fts3232/workspace/installer/lumen/public/api/cashNote/add', data, { timeout: 5000 }).then((response) => {
                     let type = 'success';
                     if (!response.data.status) {
-                        type = 'error'
+                        type = 'error';
                     }
                     showMessage(type, response.data.msg);
-                }).catch(function (error) {
+                }).catch((error) => {
                     console.log(error);
                     showMessage('error', error.message);
                 }).then(() => {
-                    _this.setState({'submission': false})
+                    _this.setState({ 'submission': false });
                 });
-            })
+            });
         }
     }
 
     render() {
-        const {classes} = this.props;
-        const {type, showTip} = this.state;
-        let categorys = type == 0 ? categoryMap.cost : categoryMap.income
+        const { classes } = this.props;
+        const { type } = this.state;
+        const categorys = type === 0 ? categoryMap.cost : categoryMap.income;
         return (
-            <div className={ classes.root }>
+            <div className={classes.root}>
                 <FormGroup>
                     <FormControl component="fieldset">
                         <FormLabel component="legend">日期</FormLabel>
                         <TextField
                             id="date"
                             type="date"
-                            defaultValue={ this.state.date }
-                            className={ classes.textField }
-                            InputLabelProps={ {
-                                shrink: true,
-                            } }
-                            onChange={ this.handleChange('date') }
+                            defaultValue={this.state.date}
+                            className={classes.textField}
+                            InputLabelProps={{
+                                shrink: true
+                            }}
+                            onChange={this.handleChange('date')}
                         />
                     </FormControl>
-                    <FormControl component="fieldset" className={ classes.formControl }>
+                    <FormControl component="fieldset" className={classes.formControl}>
                         <FormLabel component="legend">类型</FormLabel>
                         <RadioGroup
                             aria-label="类型"
                             name="type"
-                            className={ classes.radioGroup }
-                            defaultValue={ '0' }
-                            value={ this.state.value }
-                            onChange={ this.handleChange('type') }
+                            className={classes.radioGroup}
+                            defaultValue="0"
+                            value={this.state.value}
+                            onChange={this.handleChange('type')}
                         >
-                            <FormControlLabel value="0" control={ <Radio/> } label="支出"/>
-                            <FormControlLabel value="1" control={ <Radio/> } label="收入"/>
+                            <FormControlLabel value="0" control={<Radio/>} label="支出"/>
+                            <FormControlLabel value="1" control={<Radio/>} label="收入"/>
                         </RadioGroup>
                     </FormControl>
-                    <FormControl component="fieldset" className={ classes.formControl }>
+                    <FormControl component="fieldset" className={classes.formControl}>
                         <FormLabel component="legend">项目</FormLabel>
                         <NativeSelect
-                            value={ this.state.category }
-                            onChange={ this.handleChange('category') }
+                            value={this.state.category}
+                            onChange={this.handleChange('category')}
                             name="category"
-                            className={ classes.textField }
+                            className={classes.textField}
                         >
                             { categorys.map((category) => {
-                                if (typeof category.items != 'undefined') {
+                                if (typeof category.items !== 'undefined') {
                                     return (
-                                        <optgroup label={ category.label }>
+                                        <optgroup label={category.label}>
                                             { category.items.map((items) => {
-                                                return (<option value={ items.value }>{ items.label }</option>)
+                                                return (<option value={items.value}>{ items.label }</option>);
                                             }) }
                                         </optgroup>
-                                    )
-                                } else {
-                                    return (<option value={ category.value }>{ category.label }</option>)
-                                }
+                                    );
+                                } 
+                                return (<option value={category.value}>{ category.label }</option>);
+                                
                             }) }
                         </NativeSelect>
                     </FormControl>
-                    <FormControl component="fieldset" className={ classes.formControl }>
+                    <FormControl component="fieldset" className={classes.formControl}>
                         <FormLabel component="legend">金额</FormLabel>
                         <TextField
                             id="standard-name"
-                            className={ classes.textField }
-                            value={ this.state.amount }
+                            className={classes.textField}
+                            value={this.state.amount}
                             placeholder="0.00"
                             type="number"
-                            onChange={ this.handleChange('amount') }
+                            onChange={this.handleChange('amount')}
                         />
                     </FormControl>
-                    <FormControl component="fieldset" className={ classes.formControl }>
+                    <FormControl component="fieldset" className={classes.formControl}>
                         <FormLabel component="legend">备注</FormLabel>
                         <TextField
                             multiline
                             rows="4"
                             placeholder="请输入备注"
-                            value={ this.state.remark }
-                            onChange={ this.handleChange('remark') }
-                            className={ classes.textField }
+                            value={this.state.remark}
+                            onChange={this.handleChange('remark')}
+                            className={classes.textField}
                         />
                     </FormControl>
                 </FormGroup>
-                <div style={ {textAlign: 'right'} }>
-                    <Button variant="contained" color="primary" component="span" className={ classes.button } onClick={ this.post }>
+                <div style={{ textAlign: 'right' }}>
+                    <Button variant="contained" color="primary" component="span" className={classes.button} onClick={this.post}>
                         添加
                     </Button>
-                    <Button variant="contained" component="span" className={ classes.button } component={ RouterLink } to="/">
+                    <Button variant="contained" className={classes.button} component={RouterLink} to="/">
                         取消
                     </Button>
                 </div>
@@ -184,12 +183,8 @@ class Add extends React.Component {
     }
 }
 
-Add.propTypes = { //isRequired  代表该参数是必须的
-    classes: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.array,
-        PropTypes.object
-    ]),
+Add.propTypes = { // isRequired  代表该参数是必须的
+    classes: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(Add);

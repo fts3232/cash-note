@@ -16,9 +16,9 @@ const categoryMap = {
 };
 
 const selectCategoryMap = {
-    'cost'  : [
+    'cost': [
         {
-            'label': "生活必要花费",
+            'label': '生活必要花费',
             'items': [
                 {
                     label: '交通', value: 'c-1-1'
@@ -38,7 +38,7 @@ const selectCategoryMap = {
             ]
         },
         {
-            'label': "其他",
+            'label': '其他',
             'items': [
                 {
                     label: '交通', value: 'c-2-1'

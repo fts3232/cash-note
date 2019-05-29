@@ -12,16 +12,16 @@ import { Link as RouterLink } from 'react-router-dom';
 import axios from 'axios';
 
 const styles = theme => ({
-    title     : {
-        fontSize: 14,
+    title: {
+        fontSize: 14
     },
-    income    : {
+    income: {
         color: theme.income
     },
-    cost      : {
+    cost: {
         color: theme.cost
     },
-    bar       : {
+    bar: {
         '& .ct-series-a': {
             '& .ct-bar': {
                 stroke: theme.income
@@ -37,7 +37,7 @@ const styles = theme => ({
         display  : 'block',
         textAlign: 'right'
     },
-    chip      : {
+    chip: {
         marginRight: '5px'
     }
 });
@@ -45,25 +45,29 @@ const styles = theme => ({
 
 class Dashboard extends React.Component {
     state = {
-        data            : {
+        data: {
             income: [],
             cost  : []
         },
         grossIncome     : '0.00',
-        totalExpenditure: '0.00',
+        totalExpenditure: '0.00'
     };
 
+    componentDidMount() {
+        this.getData();
+    }
+
     getOptions() {
-        let {data} = this.state;
-        let date = new Date();
+        const { data } = this.state;
+        const date = new Date();
         let currentMonth = date.getMonth() + 1;
         let currentYear = date.getFullYear();
-        let xAxisData = [];
+        const xAxisData = [];
         for (let i = 12; i > 0; i--) {
             if (currentMonth < 10) {
-                currentMonth = '0' + currentMonth;
+                currentMonth = `0${  currentMonth }`;
             }
-            xAxisData.push(currentYear + '-' + currentMonth);
+            xAxisData.push(`${ currentYear  }-${  currentMonth }`);
             currentMonth -= 1;
             if (currentMonth <= 0) {
                 currentMonth = 12;
@@ -78,31 +82,31 @@ class Dashboard extends React.Component {
                     type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                 }
             },
-            legend : {
+            legend: {
                 data: ['收入', '支出']
             },
-            grid   : {
+            grid: {
                 left        : '3%',
                 right       : '4%',
                 bottom      : '3%',
                 containLabel: true
             },
-            xAxis  : [
+            xAxis: [
                 {
                     type: 'category',
                     data: xAxisData
                 }
             ],
-            yAxis  : [
+            yAxis: [
                 {
                     type: 'value'
                 }
             ],
-            series : [
+            series: [
                 {
                     name: '收入',
                     type: 'bar',
-                    data: data.income,
+                    data: data.income
                 },
                 {
                     name: '支出',
@@ -114,87 +118,87 @@ class Dashboard extends React.Component {
     };
 
     getData = () => {
-        let params = {
+        const params = {
             'getGrossIncome'     : 1,
             'getTotalExpenditure': 1,
             'getMonthData'       : 1
         };
-        let _this = this;
-        axios.get('http://localhost/fts3232/workspace/installer/lumen/public/api/cashNote/fetch', {params: params}, {timeout: 5000}).then(function (response) {
+        const _this = this;
+        axios.get('http://localhost/fts3232/workspace/installer/lumen/public/api/cashNote/fetch', { params }, { timeout: 5000 }).then((response) => {
             _this.setState({
                 'data'            : response.data.monthData,
                 'grossIncome'     : response.data.grossIncome,
-                'totalExpenditure': response.data.totalExpenditure,
+                'totalExpenditure': response.data.totalExpenditure
             });
-        }).catch(function (error) {
+        }).catch((error) => {
             console.log(error);
         });
     };
 
     onClick = (v) => {
-        this.props.history.push('/detail/' + v.name);
+        this.props.history.push(`/detail/${  v.name }`);
     };
 
     numberFormat = (num) => {
-        return num.replace(/\d+/, function (s) {
-            return s.replace(/(\d)(?=(\d{3})+$)/g, '$1,')
-        })
+        return num.replace(/\d+/, (s) => {
+            return s.replace(/(\d)(?=(\d{3})+$)/g, '$1,');
+        });
     };
 
-    componentDidMount() {
-        this.getData();
-    }
-
     render() {
-        const {classes} = this.props;
-        const {grossIncome, totalExpenditure} = this.state;
+        const { classes } = this.props;
+        const { grossIncome, totalExpenditure } = this.state;
         return (
-            <Grid container spacing={ 8 }>
-                <Grid item xs={ 4 }>
+            <Grid container spacing={8}>
+                <Grid item xs={4}>
                     <Card>
                         <CardContent>
-                            <Typography className={ classes.title } color="textSecondary" gutterBottom>
+                            <Typography className={classes.title} color="textSecondary" gutterBottom>
                                 总收入
                             </Typography>
-                            <Typography variant="h5" component="h5" className={ classes.income }>
+                            <Typography variant="h5" component="h5" className={classes.income}>
                                 { this.numberFormat(grossIncome) }
                             </Typography>
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={ 4 }>
+                <Grid item xs={4}>
                     <Card>
                         <CardContent>
-                            <Typography className={ classes.title } color="textSecondary" gutterBottom>
+                            <Typography className={classes.title} color="textSecondary" gutterBottom>
                                 总支出
                             </Typography>
-                            <Typography variant="h5" component="h2" className={ classes.cost }>
+                            <Typography variant="h5" component="h2" className={classes.cost}>
                                 { this.numberFormat(totalExpenditure) }
                             </Typography>
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={ 4 }>
+                <Grid item xs={4}>
                     <Card>
                         <CardContent>
-                            <Typography className={ classes.title } color="textSecondary" gutterBottom>
+                            <Typography className={classes.title} color="textSecondary" gutterBottom>
                                 净值
                             </Typography>
-                            <Typography variant="h5" component="h2" className={ classes.income }>
+                            <Typography variant="h5" component="h2" className={classes.income}>
                                 { this.numberFormat((grossIncome - totalExpenditure).toFixed(2)) }
                             </Typography>
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={ 12 }>
+                <Grid item xs={12}>
                     <Card>
                         <CardContent>
-                            <ReactEcharts option={ this.getOptions() } style={ {height: '500px'} } onEvents={ {
-                                'click': this.onClick,
-                            } }/>
+                            <ReactEcharts
+                                option={this.getOptions()}
+                                style={{ height: '500px' }}
+                                onEvents={{
+                                    'click': this.onClick
+                                }}
+                            />
                         </CardContent>
-                        <CardActions className={ classes.cardAction }>
-                            <Button size="small" color="primary" component={ RouterLink } to="/detail/">
+                        <CardActions className={classes.cardAction}>
+                            <Button size="small" color="primary" component={RouterLink} to="/detail/">
                                 查看更多
                             </Button>
                         </CardActions>
@@ -205,12 +209,8 @@ class Dashboard extends React.Component {
     }
 }
 
-Dashboard.propTypes = { //isRequired  代表该参数是必须的
-    classes: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.array,
-        PropTypes.object
-    ]),
+Dashboard.propTypes = { // isRequired  代表该参数是必须的
+    classes: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(Dashboard);

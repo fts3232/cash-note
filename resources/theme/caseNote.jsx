@@ -2,7 +2,7 @@ import { createMuiTheme } from '@material-ui/core/styles';
 
 const theme = createMuiTheme({
     income: 'green',
-    cost:'red'
+    cost  : 'red'
 });
 
-export default theme
+export default theme;
