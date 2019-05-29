@@ -9,6 +9,9 @@ import CopyPlugin from 'copy-webpack-plugin';
 import HappyPack from 'happypack';
 import os from 'os';
 
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const CompressionWebpackPlugin = require('compression-webpack-plugin');
+
 const happyThreadPool = HappyPack.ThreadPool({size: os.cpus().length});
 //定义了一些文件夹的路径
 const resourcesPath = path.resolve(path.resolve(__dirname), 'resources');
@@ -69,42 +72,44 @@ const config = {
             }
         ]
     },
-    externals   : {
-        'vue'                          : 'Vue',
-        'element-ui'                   : 'ELEMENT',
-        'element-ui/lib/locale/lang/en': 'ELEMENT.lang.en',
-        'vue-i18n'                     : 'VueI18n',
-        'vuex'                         : 'Vuex',
-        'vue-router'                   : 'VueRouter',
-        'postcss-loader'               : 'postcss-loader',
-        'style-loader'                 : 'style-loader',
-        'sass-loader'                  : 'sass-loader',
-        "lodash"                       : 'lodash',
-        'mockjs'                       : 'Mock',
-        'superagent'                   : 'superagent',
-        "react"                        : 'React',
-        'react-dom'                    : 'ReactDOM',
-        'echarts'                      : 'echarts',
-        '@material-ui'                 : 'MaterialUI',
-        //'react-router'                 : 'ReactRouter',
-        //'react-router-dom'             : 'ReactRouterDOM',
-        //'react-router-config'          : 'ReactRouterConfig',
-        'history/createBrowserHistory' : 'history',//history插件
-        'moment/moment.js'             : 'moment',//时间插件
-        'pubsub-js'                    : 'PubSub',//pubSub插件
-        'react-quill'                  : 'ReactQuill',//富文本编辑器
-        'jquery'                       : '$',
-        'bootstrap'                    : true,
-        'fancybox'                     : true,
-        'co'                           : true,
-        '_'                            : true,
-        'async'                        : true,
-        'datetimepicker'               : true,
-        'selectpicker'                 : true,
-        'sweetalert'                   : true,
-        'highcharts'                   : true,
-        'director'                     : true
-    },
+    externals   : [
+        {
+            'vue'                          : 'Vue',
+            'element-ui'                   : 'ELEMENT',
+            'element-ui/lib/locale/lang/en': 'ELEMENT.lang.en',
+            'vue-i18n'                     : 'VueI18n',
+            'vuex'                         : 'Vuex',
+            'vue-router'                   : 'VueRouter',
+            'postcss-loader'               : 'postcss-loader',
+            'style-loader'                 : 'style-loader',
+            'sass-loader'                  : 'sass-loader',
+            "lodash"                       : 'lodash',
+            'mockjs'                       : 'Mock',
+            'superagent'                   : 'superagent',
+            "react"                        : 'React',
+            'react-dom'                    : 'ReactDOM',
+            'react-redux'                  : 'ReactRedux',
+            'echarts'                      : 'echarts',
+            'react-router'                 : 'ReactRouter',
+            //'react-router-dom'             : 'ReactRouterDOM',
+            'react-router-config'          : 'ReactRouterConfig',
+            'history/createBrowserHistory' : 'history',//history插件
+            'moment/moment.js'             : 'moment',//时间插件
+            'pubsub-js'                    : 'PubSub',//pubSub插件
+            'react-quill'                  : 'ReactQuill',//富文本编辑器
+            'jquery'                       : '$',
+            'bootstrap'                    : true,
+            'fancybox'                     : true,
+            'co'                           : true,
+            '_'                            : true,
+            'async'                        : true,
+            'datetimepicker'               : true,
+            'selectpicker'                 : true,
+            'sweetalert'                   : true,
+            'highcharts'                   : true,
+            'director'                     : true
+        }
+    ],
     plugins     : [
         new CleanWebpackPlugin(['js/build', 'index.html', 'css/build'], {
             root   : publicPath,
@@ -191,6 +196,16 @@ const config = {
         new CopyPlugin([
             {from: resourcesPath + '/assets/.htaccess', to: publicPath},
         ]),
+        new BundleAnalyzerPlugin({
+            analyzerMode     : 'disabled',
+            openAnalyzer     : false,
+            generateStatsFile: true,
+        }),
+        new CompressionWebpackPlugin({
+            algorithm: 'gzip',
+            test     : /\.(js|css)$/,
+            threshold: 10240,
+        })
     ],
     optimization: {
         runtimeChunk: {
