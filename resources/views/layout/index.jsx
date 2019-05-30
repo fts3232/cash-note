@@ -5,6 +5,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { MuiThemeProvider, withStyles } from '@material-ui/core/styles';
 import theme from 'fts/theme/caseNote';
 import PropTypes from 'prop-types';
+import img from 'fts/assets/images/tt.png';
 import Header from './header.jsx';
 /* import Footer from './footer.jsx'; */
 

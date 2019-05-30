@@ -56,12 +56,20 @@ const config = {
     },
     module      : {
         rules: [
-            /*{
-                test: /\.css$/,
-                use : {
+            {
+                test   : /\.(png|jpg|jpeg|gif)$/,
+                include: resourcesPath,
+                use    : {
+                    loader: 'happypack/loader?id=pic',
+                }
+            },
+            {
+                test   : /\.css$/,
+                include: resourcesPath,
+                use    : {
                     loader: 'happypack/loader?id=css',
                 }
-            },*/
+            },
             {
                 test   : /\.(js|jsx)$/,
                 exclude: /(node_modules|bower_components)/,
@@ -135,49 +143,51 @@ const config = {
         new HappyPack({
             id        : 'babel',
             //如何处理  用法和loader 的配置一样
-            loaders   : [{
-                loader : 'babel-loader',
-                options: {
-                    cacheDirectory: true,
-                    presets       : [
-                        [
-                            '@babel/preset-env',
-                            {
-                                "targets": {
-                                    "browsers": ["last 2 versions", "ie >= 9"]
+            loaders   : [
+                {
+                    loader : 'babel-loader',
+                    options: {
+                        cacheDirectory: true,
+                        presets       : [
+                            [
+                                '@babel/preset-env',
+                                {
+                                    "targets": {
+                                        "browsers": ["last 2 versions", "ie >= 9"]
+                                    }
                                 }
-                            }
+                            ],
+                            ["@babel/preset-react"]
                         ],
-                        ["@babel/preset-react"]
-                    ],
-                    plugins       : [
-                        '@babel/plugin-syntax-dynamic-import',
-                        '@babel/plugin-proposal-class-properties',
-                        '@babel/plugin-transform-runtime',
-                        [
-                            'babel-plugin-import',
-                            {
-                                libraryName            : '@material-ui/icons',
-                                libraryDirectory       : 'esm', // or '' if your bundler does not support ES modules
-                                camel2DashComponentName: false,
-                            },
-                        ]
-                    ],
-                }
-            },{
-                loader: 'eslint-loader',
-                options: {
-                    // some options
-                    fix: true,
+                        plugins       : [
+                            '@babel/plugin-syntax-dynamic-import',
+                            '@babel/plugin-proposal-class-properties',
+                            '@babel/plugin-transform-runtime',
+                            [
+                                'babel-plugin-import',
+                                {
+                                    libraryName            : '@material-ui/icons',
+                                    libraryDirectory       : 'esm', // or '' if your bundler does not support ES modules
+                                    camel2DashComponentName: false,
+                                },
+                            ]
+                        ],
+                    }
                 },
-            },
+                {
+                    loader : 'eslint-loader',
+                    options: {
+                        // some options
+                        fix: true,
+                    },
+                },
             ],
             //共享进程池
             threadPool: happyThreadPool,
             //允许 HappyPack 输出日志
             verbose   : true,
         }),
-        /*new HappyPack({
+        new HappyPack({
             id        : 'css',
             //如何处理  用法和loader 的配置一样
             loaders   : [
@@ -199,7 +209,26 @@ const config = {
             threadPool: happyThreadPool,
             //允许 HappyPack 输出日志
             verbose   : true,
-        }),*/
+        }),
+        new HappyPack({
+            id        : 'pic',
+            //如何处理  用法和loader 的配置一样
+            loaders   : [
+                {
+                    loader: "url-loader",
+                    options: {
+                        name: "[name]-[hash:5].min.[ext]",
+                        limit: 1000, // size <= 1KB
+                        publicPath: "/images/",
+                        outputPath: publicPath + "/images"
+                    }
+                },
+            ],
+            //共享进程池
+            threadPool: happyThreadPool,
+            //允许 HappyPack 输出日志
+            verbose   : true,
+        }),
         new CopyPlugin([
             {from: resourcesPath + '/assets/.htaccess', to: publicPath},
         ]),
