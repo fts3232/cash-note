@@ -8,9 +8,10 @@ import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
 import CopyPlugin from 'copy-webpack-plugin';
 import HappyPack from 'happypack';
 import os from 'os';
+import CompressionWebpackPlugin from 'compression-webpack-plugin';
+
 
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const CompressionWebpackPlugin = require('compression-webpack-plugin');
 
 const happyThreadPool = HappyPack.ThreadPool({size: os.cpus().length});
 //定义了一些文件夹的路径
@@ -59,23 +60,68 @@ const config = {
             {
                 test   : /\.(png|jpg|jpeg|gif)$/,
                 include: resourcesPath,
-                use    : {
-                    loader: 'happypack/loader?id=pic',
-                }
+                use    : [
+                    {
+                        loader : "url-loader",
+                        options: {
+                            name      : "[name]-[hash:5].min.[ext]",
+                            limit     : 1000, // size <= 1KB
+                            publicPath: "/images/build/",
+                            outputPath: "./images/build",
+                        }
+                    },
+                   {
+                        loader: 'image-webpack-loader',
+                        options: {
+                         pngquant: { // 使用 imagemin-pngquant 压缩 png
+                           quality: '65-90',
+                           speed: 4
+                         }
+                       }
+                    }
+                ]
             },
-            {
+            /*{
                 test   : /\.css$/,
                 include: resourcesPath,
                 use    : {
                     loader: 'happypack/loader?id=css',
                 }
-            },
+            },*/
             {
                 test   : /\.(js|jsx)$/,
                 exclude: /(node_modules|bower_components)/,
                 include: resourcesPath,
                 use    : {
-                    loader: 'happypack/loader?id=babel',
+                    //loader: 'happypack/loader?id=babel',
+                    loader : 'babel-loader',
+                    options: {
+                        cacheDirectory: true,
+                        presets       : [
+                            [
+                                '@babel/preset-env',
+                                {
+                                    "targets": {
+                                        "browsers": ["last 2 versions", "ie >= 9"]
+                                    }
+                                }
+                            ],
+                            ["@babel/preset-react"]
+                        ],
+                        plugins       : [
+                            '@babel/plugin-syntax-dynamic-import',
+                            '@babel/plugin-proposal-class-properties',
+                            '@babel/plugin-transform-runtime',
+                            [
+                                'babel-plugin-import',
+                                {
+                                    libraryName            : '@material-ui/icons',
+                                    libraryDirectory       : 'esm', // or '' if your bundler does not support ES modules
+                                    camel2DashComponentName: false,
+                                },
+                            ]
+                        ],
+                    }
                 }
             }
         ]
@@ -119,7 +165,7 @@ const config = {
         }
     ],
     plugins     : [
-        new CleanWebpackPlugin(['js/build', 'index.html', 'css/build'], {
+        new CleanWebpackPlugin(['js/build', 'index.html', 'css/build', 'images/build'], {
             root   : publicPath,
             verbose: true,
             dry    : false
@@ -139,6 +185,19 @@ const config = {
             // both options are optional
             filename     : '[name].css',
             chunkFilename: '[id].css',
+        }),
+        new SpritesmithPlugin({
+            src: {
+                cwd: path.resolve(resourcesPath, 'assets/ico'),
+                glob: '*.png'
+            },
+            target: {
+                image: publicPath + '/images/build/spritesmith-generated/sprite.png',
+                css: publicPath + '/css/build/spritesmith-generated/sprite.css',
+            },
+            apiOptions: {
+                cssImageRef: "~sprite.png"
+            }
         }),
         new HappyPack({
             id        : 'babel',
@@ -187,48 +246,29 @@ const config = {
             //允许 HappyPack 输出日志
             verbose   : true,
         }),
-        new HappyPack({
-            id        : 'css',
-            //如何处理  用法和loader 的配置一样
-            loaders   : [
-                {
-                    loader: "style-loader/url"
-                },
-                {
-                    loader : "file-loader",
-                    options: {
-                        name      : '[name].[ext]?v=[hash]',
-                        outputPath: 'css/build'
-                    },
-                },
-                {
-                    loader: 'postcss-loader'
-                }
-            ],
-            //共享进程池
-            threadPool: happyThreadPool,
-            //允许 HappyPack 输出日志
-            verbose   : true,
-        }),
-        new HappyPack({
-            id        : 'pic',
-            //如何处理  用法和loader 的配置一样
-            loaders   : [
-                {
-                    loader: "url-loader",
-                    options: {
-                        name: "[name]-[hash:5].min.[ext]",
-                        limit: 1000, // size <= 1KB
-                        publicPath: "/images/",
-                        outputPath: publicPath + "/images"
-                    }
-                },
-            ],
-            //共享进程池
-            threadPool: happyThreadPool,
-            //允许 HappyPack 输出日志
-            verbose   : true,
-        }),
+        /*new HappyPack({
+             id        : 'css',
+             //如何处理  用法和loader 的配置一样
+             loaders   : [
+                 {
+                     loader: "style-loader/url"
+                 },
+                 {
+                     loader : "file-loader",
+                     options: {
+                         name      : '[name].[ext]?v=[hash]',
+                         outputPath: 'css/build'
+                     },
+                 },
+                 {
+                     loader: 'postcss-loader'
+                 }
+             ],
+             //共享进程池
+             threadPool: happyThreadPool,
+             //允许 HappyPack 输出日志
+             verbose   : true,
+         }),*/
         new CopyPlugin([
             {from: resourcesPath + '/assets/.htaccess', to: publicPath},
         ]),
