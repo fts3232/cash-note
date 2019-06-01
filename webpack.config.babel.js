@@ -3,15 +3,19 @@ import path from 'path';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
 import CopyPlugin from 'copy-webpack-plugin';
 import HappyPack from 'happypack';
 import os from 'os';
 import CompressionWebpackPlugin from 'compression-webpack-plugin';
-
-
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+//css整合成1个文件
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+//补全css
+import AutoPrefixer from 'autoprefixer';
+//css 2x图插件
+import PostCssAt2x from 'postcss-at2x';
+//css 雪碧图
+import PostCssSprites from 'postcss-sprites';
 
 const happyThreadPool = HappyPack.ThreadPool({size: os.cpus().length});
 //定义了一些文件夹的路径
@@ -41,8 +45,8 @@ const config = {
     //输出的文件名 合并以后的js会命名为bundle.js
     output      : {
         path         : publicPath,
-        filename     : 'js/build/[name].js?v=[hash]',
-        chunkFilename: 'js/build/[name].bundle.js?v=[chunkhash]',
+        filename     : 'js/[name].js?v=[hash]',
+        chunkFilename: 'js/[name].bundle.js?v=[chunkhash]',
         publicPath   : '/',
     },
     //webpack-dev-server
@@ -60,17 +64,18 @@ const config = {
             {
                 test   : /\.(png|jpg|jpeg|gif)$/,
                 include: resourcesPath,
-                use    : [
+                use    :  [
                     {
                         loader : "url-loader",
                         options: {
                             name      : "[name]-[hash:5].min.[ext]",
+                            fallback: 'file-loader',
                             limit     : 1000, // size <= 1KB
-                            publicPath: "/images/build/",
-                            outputPath: "./images/build",
+                            publicPath: "/images/",
+                            outputPath: "./images",
                         }
                     },
-                   {
+                    {
                         loader: 'image-webpack-loader',
                         options: {
                          pngquant: { // 使用 imagemin-pngquant 压缩 png
@@ -79,49 +84,81 @@ const config = {
                          }
                        }
                     }
+                ],
+            },
+            {
+                 test: /\.(sa|sc|c)ss$/,
+                include: resourcesPath,
+                use    :  [
+                    MiniCssExtractPlugin.loader,
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            //modules: true,
+                            //localIdentName: '[local]',
+                            // some options
+                            minimize: true, //生产模式开启压缩
+                        },
+                    },
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            plugins: [
+                            new PostCssAt2x(), 
+                            new AutoPrefixer(),
+                            new PostCssSprites({
+                                retina: true, //支持retina，可以实现合并不同比例图片
+                                verbose: true,
+                                spritePath: resourcesPath + '/assets/images', //雪碧图合并后存放地址
+                                //styleFilePath: resourcesPath + '/assets/css',
+                                basePath: './images',
+                                filterBy: function(image) {
+                                    //过滤一些不需要合并的图片，返回值是一个promise，默认有一个exist的filter
+                                    if (image.originalUrl.indexOf('?__sprites') === -1) {
+                                        return Promise.reject();
+                                    }
+                                    return Promise.resolve();
+                                },
+                                groupBy: function(image) {
+                                    //将图片分组，可以实现按照文件夹生成雪碧图
+                                    var groupName = '/sprite';
+                                    var url = path.dirname(image.url);
+                                    url = url.replace(/\.\.\//g, '');
+                                    url = url.replace(/\.\//g, '');
+                                    if (image.url.indexOf('@2x') !== -1) {
+                                        groupName = '/sprite@2x';
+                                    } else if (image.url.indexOf('@3x') !== -1) {
+                                        groupName = '/sprite@3x';
+                                    }
+                                    if(url == 'images'){
+                                        url = '';
+                                    }
+                                    return Promise.resolve(url+groupName);
+                                },
+                                hooks: {
+                                    onSaveSpritesheet: function(opts, spritesheet) {
+                                        // We assume that the groups is not an empty array
+                                        var filenameChunks = spritesheet.groups.concat(
+                                            spritesheet.extension
+                                        );
+                                        return path.join(
+                                            opts.spritePath,
+                                            filenameChunks.join('.')
+                                        );
+                                    },
+                                },
+                            })],
+                        },
+                    },
+                    'sass-loader',
                 ]
             },
-            /*{
-                test   : /\.css$/,
-                include: resourcesPath,
-                use    : {
-                    loader: 'happypack/loader?id=css',
-                }
-            },*/
             {
                 test   : /\.(js|jsx)$/,
                 exclude: /(node_modules|bower_components)/,
                 include: resourcesPath,
                 use    : {
-                    //loader: 'happypack/loader?id=babel',
-                    loader : 'babel-loader',
-                    options: {
-                        cacheDirectory: true,
-                        presets       : [
-                            [
-                                '@babel/preset-env',
-                                {
-                                    "targets": {
-                                        "browsers": ["last 2 versions", "ie >= 9"]
-                                    }
-                                }
-                            ],
-                            ["@babel/preset-react"]
-                        ],
-                        plugins       : [
-                            '@babel/plugin-syntax-dynamic-import',
-                            '@babel/plugin-proposal-class-properties',
-                            '@babel/plugin-transform-runtime',
-                            [
-                                'babel-plugin-import',
-                                {
-                                    libraryName            : '@material-ui/icons',
-                                    libraryDirectory       : 'esm', // or '' if your bundler does not support ES modules
-                                    camel2DashComponentName: false,
-                                },
-                            ]
-                        ],
-                    }
+                    loader: 'happypack/loader?id=babel',
                 }
             }
         ]
@@ -165,7 +202,7 @@ const config = {
         }
     ],
     plugins     : [
-        new CleanWebpackPlugin(['js/build', 'index.html', 'css/build', 'images/build'], {
+        new CleanWebpackPlugin(['js', 'index.html', 'css', 'images'], {
             root   : publicPath,
             verbose: true,
             dry    : false
@@ -183,21 +220,8 @@ const config = {
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output
             // both options are optional
-            filename     : '[name].css',
-            chunkFilename: '[id].css',
-        }),
-        new SpritesmithPlugin({
-            src: {
-                cwd: path.resolve(resourcesPath, 'assets/ico'),
-                glob: '*.png'
-            },
-            target: {
-                image: publicPath + '/images/build/spritesmith-generated/sprite.png',
-                css: publicPath + '/css/build/spritesmith-generated/sprite.css',
-            },
-            apiOptions: {
-                cssImageRef: "~sprite.png"
-            }
+            filename     : 'css/[name].css',
+            chunkFilename: 'css/[id].css',
         }),
         new HappyPack({
             id        : 'babel',
@@ -246,37 +270,9 @@ const config = {
             //允许 HappyPack 输出日志
             verbose   : true,
         }),
-        /*new HappyPack({
-             id        : 'css',
-             //如何处理  用法和loader 的配置一样
-             loaders   : [
-                 {
-                     loader: "style-loader/url"
-                 },
-                 {
-                     loader : "file-loader",
-                     options: {
-                         name      : '[name].[ext]?v=[hash]',
-                         outputPath: 'css/build'
-                     },
-                 },
-                 {
-                     loader: 'postcss-loader'
-                 }
-             ],
-             //共享进程池
-             threadPool: happyThreadPool,
-             //允许 HappyPack 输出日志
-             verbose   : true,
-         }),*/
         new CopyPlugin([
             {from: resourcesPath + '/assets/.htaccess', to: publicPath},
         ]),
-        /*new BundleAnalyzerPlugin({
-            analyzerMode     : 'disabled',
-            openAnalyzer     : false,
-            generateStatsFile: true,
-        }),*/
         new CompressionWebpackPlugin({
             algorithm: 'gzip',
             test     : /\.(js|css)$/,

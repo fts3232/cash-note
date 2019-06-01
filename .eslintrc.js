@@ -103,6 +103,7 @@ module.exports = {
         'no-unused-expressions'                : 0,
         'guard-for-in'                         : 0,
         "no-restricted-syntax"                 : 0,
-        'import/no-unresolved'                 : 0
+        'import/no-unresolved'                 : 0,
+        'no-unused-vars':0
     },
 };
