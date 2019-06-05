@@ -11,6 +11,7 @@ const categoryMap = {
     'c-2-5': '游戏',
     'c-2-6': '购物',
     'c-2-7': '大保健',
+    'c-2-8': 'vpn',
     'i-1-1': '工资',
     'i-1-2': '其他'
 };
@@ -63,6 +64,9 @@ const selectCategoryMap = {
                 ,
                 {
                     label: '大保健', value: 'c-2-7'
+                },
+                {
+                    label: 'vpn', value: 'c-2-8'
                 }
             ]
         }
