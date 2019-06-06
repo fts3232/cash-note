@@ -13,7 +13,7 @@ import Button from '@material-ui/core/Button';
 import { Link as RouterLink } from 'react-router-dom';
 import axios from 'axios';
 import showMessage from 'fts/components/showMessage';
-import { selectCategoryMap as categoryMap } from 'fts/config/app.js';
+import { categoryMap } from 'fts/config/app.js';
 import css from 'fts/assets/scss/a.scss';
 import Qs from 'qs';
 
@@ -43,9 +43,36 @@ const year = date.getFullYear();
 let day = date.getDate();
 day = day < 10 ? `0${  day }` : day;
 
+
+const selectCategoryMap = {
+    'cost'  : [],
+    'income': []
+};
+let costFlag1 = false;
+let costFlag2 = false;
+for (const x in categoryMap) {
+    if (x.indexOf('c-') !== -1) {
+        if (categoryMap[x].indexOf('生活必要花费') !== -1) {
+            if (costFlag1 === false) {
+                selectCategoryMap.cost.push({ 'label': '生活必要花费', 'items': [] });
+                costFlag1 = selectCategoryMap.cost.length - 1;
+            }
+            selectCategoryMap.cost[costFlag1].items.push({ 'label': categoryMap[x], 'value': x });
+        } else {
+            if (costFlag2 === false) {
+                selectCategoryMap.cost.push({ 'label': '其他', 'items': [] });
+                costFlag2 = selectCategoryMap.cost.length - 1;
+            }
+            selectCategoryMap.cost[costFlag2].items.push({ 'label': categoryMap[x], 'value': x });
+        }
+    } else {
+        selectCategoryMap.income.push({ 'label': categoryMap[x], 'value': x });
+    }
+}
+
 class Add extends React.Component {
     state = {
-        type      : 0,
+        type      : '0',
         amount    : '',
         category  : 'c-1',
         remark    : '',
@@ -56,7 +83,7 @@ class Add extends React.Component {
     handleChange = name => event => {
         const { value } = event.target;
         if (name === 'type') {
-            this.setState({ 'category': value === 0 ? 'c-1' : 'i-1' });
+            this.setState({ 'category': value === '0' ? 'c-1' : 'i-1' });
         }
         this.setState({ [name]: value });
     };
@@ -94,7 +121,7 @@ class Add extends React.Component {
     render() {
         const { classes } = this.props;
         const { type } = this.state;
-        const categorys = type === 0 ? categoryMap.cost : categoryMap.income;
+        const categorys = type === '0' ? selectCategoryMap.cost : selectCategoryMap.income;
         return (
             <div className={classes.root}>
                 <FormGroup>

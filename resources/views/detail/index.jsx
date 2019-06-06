@@ -12,6 +12,9 @@ import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import Paper from '@material-ui/core/Paper';
 import { categoryMap } from 'fts/config/app.js';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
 import axios from 'axios';
 
 const styles = theme => ({
@@ -41,10 +44,12 @@ class Dashboard extends React.Component {
             income: [],
             cost  : []
         },
-        page       : 0,
-        rowsPerPage: 10,
-        count      : 0,
-        rows       : []
+        page            : 0,
+        rowsPerPage     : 10,
+        count           : 0,
+        rows            : [],
+        grossIncome     : '0.00',
+        totalExpenditure: '0.00'
     };
 
     componentDidMount() {
@@ -77,7 +82,7 @@ class Dashboard extends React.Component {
             },
             series: [
                 {
-                    name     : '访问来源',
+                    name     : title,
                     type     : 'pie',
                     radius   : '55%',
                     center   : ['50%', '50%'],
@@ -116,10 +121,12 @@ class Dashboard extends React.Component {
         const { page, rowsPerPage } = this.state;
         const { date } = this.props.match.params;
         const params = {
-            'getRows'   : 1,
-            'page'      : page + 1,
-            'size'      : rowsPerPage,
-            'getPieData': 1
+            'getRows'            : 1,
+            'page'               : page + 1,
+            'size'               : rowsPerPage,
+            'getGrossIncome'     : 1,
+            'getTotalExpenditure': 1,
+            'getPieData'         : 1
         };
         if (date) {
             params.date = date;
@@ -136,21 +143,66 @@ class Dashboard extends React.Component {
                 return v;
             });
             _this.setState({
-                'data' : pieData,
-                'rows' : response.data.rows,
-                'count': response.data.count
+                'data'            : pieData,
+                'rows'            : response.data.rows,
+                'count'           : response.data.count,
+                'grossIncome'     : response.data.grossIncome,
+                'totalExpenditure': response.data.totalExpenditure
             });
         }).catch((error) => {
             console.log(error);
         });
     };
 
+    numberFormat = (num) => {
+        return num.replace(/\d+/, (s) => {
+            return s.replace(/(\d)(?=(\d{3})+$)/g, '$1,');
+        });
+    };
+
     render() {
         const { classes } = this.props;
 
-        const { rowsPerPage, page, rows, count } = this.state;
+        const { rowsPerPage, page, rows, count, grossIncome, totalExpenditure } = this.state;
+        const { date } = this.props.match.params;
         return (
             <Grid container spacing={8}>
+                <Grid item xs={4}>
+                    <Card>
+                        <CardContent>
+                            <Typography className={classes.title} color="textSecondary" gutterBottom>
+                                {date} 收入
+                            </Typography>
+                            <Typography variant="h5" component="h5" className={classes.income}>
+                                { this.numberFormat(grossIncome) }
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={4}>
+                    <Card>
+                        <CardContent>
+                            <Typography className={classes.title} color="textSecondary" gutterBottom>
+                                {date} 支出
+                            </Typography>
+                            <Typography variant="h5" component="h2" className={classes.cost}>
+                                { this.numberFormat(totalExpenditure) }
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={4}>
+                    <Card>
+                        <CardContent>
+                            <Typography className={classes.title} color="textSecondary" gutterBottom>
+                                {date} 净值
+                            </Typography>
+                            <Typography variant="h5" component="h2" className={classes.income}>
+                                { this.numberFormat((grossIncome - totalExpenditure).toFixed(2)) }
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
                 <Grid item xs={6}>
                     <Paper>
                         <ReactEcharts
