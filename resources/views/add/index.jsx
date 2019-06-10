@@ -83,7 +83,7 @@ class Add extends React.Component {
     handleChange = name => event => {
         const { value } = event.target;
         if (name === 'type') {
-            this.setState({ 'category': value === '0' ? 'c-1' : 'i-1' });
+            this.setState({ 'category': value === '0' ? 'c-1-1' : 'i-1-1' });
         }
         this.setState({ [name]: value });
     };
