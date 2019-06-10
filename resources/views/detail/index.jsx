@@ -54,6 +54,9 @@ class Dashboard extends React.Component {
 
     componentDidMount() {
         this.getData();
+        this.props.history.listen((location) => {
+            this.getData();
+        });
     }
 
     getOptions(title) {
@@ -99,8 +102,8 @@ class Dashboard extends React.Component {
         };
     }
 
-    onClick = () => {
-        console.log(1);
+    onClick = (event) => {
+        this.props.history.push(`${ location.pathname }${ event.data.category }`);
     };
 
     handleChangePage = (event, page) => {
@@ -119,7 +122,7 @@ class Dashboard extends React.Component {
 
     getData = () => {
         const { page, rowsPerPage } = this.state;
-        const { date } = this.props.match.params;
+        let { date, category } = this.props.match.params;
         const params = {
             'getRows'            : 1,
             'page'               : page + 1,
@@ -129,17 +132,25 @@ class Dashboard extends React.Component {
             'getPieData'         : 1
         };
         if (date) {
-            params.date = date;
+            if (date.indexOf('c-') !== -1 || date.indexOf('i-') !== -1) {
+                category = date;
+                date = null;
+            } else {
+                params.date = date;
+            }
+        }
+        if (category) {
+            params.category = category;
         }
         const _this = this;
         axios.get('http://localhost/fts3232/workspace/installer/lumen/public/api/cashNote/fetch', { params }, { timeout: 5000 }).then((response) => {
             const { pieData } = response.data;
             pieData.income.map((v) => {
-                v.name = categoryMap[v.name];
+                v.name = categoryMap[v.category];
                 return v;
             });
             pieData.cost.map((v) => {
-                v.name = categoryMap[v.name];
+                v.name = categoryMap[v.category];
                 return v;
             });
             _this.setState({
@@ -164,67 +175,83 @@ class Dashboard extends React.Component {
         const { classes } = this.props;
 
         const { rowsPerPage, page, rows, count, grossIncome, totalExpenditure } = this.state;
-        const { date } = this.props.match.params;
+        let { date, category } = this.props.match.params;
+        if (date) {
+            if (date.indexOf('c-') !== -1 || date.indexOf('i-') !== -1) {
+                category = date;
+                date = null;
+            }
+        }
         return (
             <Grid container spacing={8}>
-                <Grid item xs={4}>
-                    <Card>
-                        <CardContent>
-                            <Typography className={classes.title} color="textSecondary" gutterBottom>
-                                {date} 收入
-                            </Typography>
-                            <Typography variant="h5" component="h5" className={classes.income}>
-                                { this.numberFormat(grossIncome) }
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-                <Grid item xs={4}>
-                    <Card>
-                        <CardContent>
-                            <Typography className={classes.title} color="textSecondary" gutterBottom>
-                                {date} 支出
-                            </Typography>
-                            <Typography variant="h5" component="h2" className={classes.cost}>
-                                { this.numberFormat(totalExpenditure) }
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-                <Grid item xs={4}>
-                    <Card>
-                        <CardContent>
-                            <Typography className={classes.title} color="textSecondary" gutterBottom>
-                                {date} 净值
-                            </Typography>
-                            <Typography variant="h5" component="h2" className={classes.income}>
-                                { this.numberFormat((grossIncome - totalExpenditure).toFixed(2)) }
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-                <Grid item xs={6}>
-                    <Paper>
-                        <ReactEcharts
-                            option={this.getOptions('收入')}
-                            style={{ height: '300px' }}
-                            onEvents={{
-                                'click': this.onClick
-                            }}
-                        />
-                    </Paper>
-                </Grid>
-                <Grid item xs={6}>
-                    <Paper>
-                        <ReactEcharts
-                            option={this.getOptions('支出')}
-                            style={{ height: '300px' }}
-                            onEvents={{
-                                'click': this.onClick
-                            }}
-                        />
-                    </Paper>
-                </Grid>
+                { category === undefined || category.indexOf('i-') !== -1 ? (
+                    <Grid item xs={category === undefined ? 4 : 12}>
+                        <Card>
+                            <CardContent>
+                                <Typography className={classes.title} color="textSecondary" gutterBottom>
+                                    { date } { category === undefined ? null : categoryMap[category] } 收入
+                                </Typography>
+                                <Typography variant="h5" component="h5" className={classes.income}>
+                                    { this.numberFormat(grossIncome) }
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                ) : null }
+                { category === undefined || category.indexOf('c-') !== -1 ? (
+                    <Grid item xs={category === undefined ? 4 : 12}>
+                        <Card>
+                            <CardContent>
+                                <Typography className={classes.title} color="textSecondary" gutterBottom>
+                                    { date } { category === undefined ? null : categoryMap[category] } 支出
+                                </Typography>
+                                <Typography variant="h5" component="h2" className={classes.cost}>
+                                    { this.numberFormat(totalExpenditure) }
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                ) : null }
+                { category === undefined ? (
+                    <Grid item xs={4}>
+                        <Card>
+                            <CardContent>
+                                <Typography className={classes.title} color="textSecondary" gutterBottom>
+                                    { date } 净值
+                                </Typography>
+                                <Typography variant="h5" component="h2" className={classes.income}>
+                                    { this.numberFormat((grossIncome - totalExpenditure).toFixed(2)) }
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                ) : null }
+                { category === undefined ? (
+                    <Grid item xs={6}>
+                        <Paper>
+                            <ReactEcharts
+                                option={this.getOptions('收入')}
+                                style={{ height: '300px' }}
+                                onEvents={{
+                                    'click': this.onClick
+                                }}
+                            />
+                        </Paper>
+                    </Grid>
+                ) : null }
+                { category === undefined ? (
+                    <Grid item xs={6}>
+                        <Paper>
+                            <ReactEcharts
+                                option={this.getOptions('支出')}
+                                style={{ height: '300px' }}
+                                onEvents={{
+                                    'click': this.onClick
+                                }}
+                            />
+                        </Paper>
+                    </Grid>
+                ) : null }
                 <Grid item xs={12}>
                     <Paper>
                         <Table className={classes.table}>

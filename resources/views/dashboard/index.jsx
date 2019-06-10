@@ -136,7 +136,7 @@ class Dashboard extends React.Component {
     };
 
     onClick = (v) => {
-        this.props.history.push(`/detail/${  v.name }`);
+        this.props.history.push(`/detail/${ v.name }/`);
     };
 
     numberFormat = (num) => {
