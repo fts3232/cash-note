@@ -21,7 +21,6 @@ const happyThreadPool = HappyPack.ThreadPool({size: os.cpus().length});
 //定义了一些文件夹的路径
 const resourcesPath = path.resolve(path.resolve(__dirname), 'resources');
 const templatePath = path.resolve(resourcesPath, 'template');
-
 const publicPath = path.resolve(path.resolve(__dirname), 'public');
 
 const config = {
@@ -62,37 +61,67 @@ const config = {
     module      : {
         rules: [
             {
+                test   : /\.(html)$/,
+                exclude: /(template)/,
+                use    : [
+                    {
+                        loader : 'file-loader',
+                        options: {
+                            name: '[name].[ext]',
+                        },
+                    },
+                    'extract-loader',
+                    {
+                        loader : 'html-loader',
+                        options: {
+                            attrs: ['img:src', 'link:href'],
+                            minimize: true, //生产模式开启压缩
+                        }
+                    }]
+            },
+            {
                 test   : /\.(png|jpg|jpeg|gif)$/,
                 include: resourcesPath,
-                use    :  [
+                use    : [
                     {
                         loader : "url-loader",
                         options: {
                             name      : "[name]-[hash:5].min.[ext]",
-                            fallback: 'file-loader',
+                            fallback  : 'file-loader',
                             limit     : 1000, // size <= 1KB
                             publicPath: "/images/",
                             outputPath: "./images",
                         }
                     },
                     {
-                        loader: 'image-webpack-loader',
+                        loader : 'image-webpack-loader',
                         options: {
-                         pngquant: { // 使用 imagemin-pngquant 压缩 png
-                           quality: '65-90',
-                           speed: 4
-                         }
-                       }
+                            pngquant: { // 使用 imagemin-pngquant 压缩 png
+                                quality: '65-90',
+                                speed  : 4
+                            }
+                        }
                     }
                 ],
             },
             {
-                 test: /\.(sa|sc|c)ss$/,
+                test   : /\.(sa|sc)ss$/,
                 include: resourcesPath,
-                use    :  [
-                    MiniCssExtractPlugin.loader,
+                use    : [
                     {
-                        loader: 'css-loader',
+                        loader:  MiniCssExtractPlugin.loader,
+                    },
+                    /*{
+                        loader:  'file-loader',
+                        options: {
+                            name: '[name].css',
+                            publicPath: "/css/",
+                            outputPath: "./css",
+                        }
+                    },
+                    'extract-loader',*/
+                    {
+                        loader : 'css-loader',
                         options: {
                             //modules: true,
                             //localIdentName: '[local]',
@@ -101,53 +130,53 @@ const config = {
                         },
                     },
                     {
-                        loader: 'postcss-loader',
+                        loader : 'postcss-loader',
                         options: {
                             plugins: [
-                            new PostCssAt2x(), 
-                            new AutoPrefixer(),
-                            new PostCssSprites({
-                                retina: true, //支持retina，可以实现合并不同比例图片
-                                verbose: true,
-                                spritePath: resourcesPath + '/assets/images', //雪碧图合并后存放地址
-                                //styleFilePath: resourcesPath + '/assets/css',
-                                basePath: './images',
-                                filterBy: function(image) {
-                                    //过滤一些不需要合并的图片，返回值是一个promise，默认有一个exist的filter
-                                    if (image.originalUrl.indexOf('?__sprites') === -1) {
-                                        return Promise.reject();
-                                    }
-                                    return Promise.resolve();
-                                },
-                                groupBy: function(image) {
-                                    //将图片分组，可以实现按照文件夹生成雪碧图
-                                    var groupName = '/sprite';
-                                    var url = path.dirname(image.url);
-                                    url = url.replace(/\.\.\//g, '');
-                                    url = url.replace(/\.\//g, '');
-                                    if (image.url.indexOf('@2x') !== -1) {
-                                        groupName = '/sprite@2x';
-                                    } else if (image.url.indexOf('@3x') !== -1) {
-                                        groupName = '/sprite@3x';
-                                    }
-                                    if(url == 'images'){
-                                        url = '';
-                                    }
-                                    return Promise.resolve(url+groupName);
-                                },
-                                hooks: {
-                                    onSaveSpritesheet: function(opts, spritesheet) {
-                                        // We assume that the groups is not an empty array
-                                        var filenameChunks = spritesheet.groups.concat(
-                                            spritesheet.extension
-                                        );
-                                        return path.join(
-                                            opts.spritePath,
-                                            filenameChunks.join('.')
-                                        );
+                                new PostCssAt2x(),
+                                new AutoPrefixer(),
+                                new PostCssSprites({
+                                    retina    : true, //支持retina，可以实现合并不同比例图片
+                                    verbose   : true,
+                                    spritePath: resourcesPath + '/assets/images', //雪碧图合并后存放地址
+                                    //styleFilePath: resourcesPath + '/assets/css',
+                                    basePath  : './images',
+                                    filterBy  : function (image) {
+                                        //过滤一些不需要合并的图片，返回值是一个promise，默认有一个exist的filter
+                                        if (image.originalUrl.indexOf('?__sprites') === -1) {
+                                            return Promise.reject();
+                                        }
+                                        return Promise.resolve();
                                     },
-                                },
-                            })],
+                                    groupBy   : function (image) {
+                                        //将图片分组，可以实现按照文件夹生成雪碧图
+                                        var groupName = '/sprite';
+                                        var url = path.dirname(image.url);
+                                        url = url.replace(/\.\.\//g, '');
+                                        url = url.replace(/\.\//g, '');
+                                        if (image.url.indexOf('@2x') !== -1) {
+                                            groupName = '/sprite@2x';
+                                        } else if (image.url.indexOf('@3x') !== -1) {
+                                            groupName = '/sprite@3x';
+                                        }
+                                        if (url == 'images') {
+                                            url = '';
+                                        }
+                                        return Promise.resolve(url + groupName);
+                                    },
+                                    hooks     : {
+                                        onSaveSpritesheet: function (opts, spritesheet) {
+                                            // We assume that the groups is not an empty array
+                                            var filenameChunks = spritesheet.groups.concat(
+                                                spritesheet.extension
+                                            );
+                                            return path.join(
+                                                opts.spritePath,
+                                                filenameChunks.join('.')
+                                            );
+                                        },
+                                    },
+                                })],
                         },
                     },
                     'sass-loader',
