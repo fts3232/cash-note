@@ -33,7 +33,7 @@ const config = {
     //devtool: 'eval-source-map',//配置生成Source Maps，选择合适的选项
     //项目的文件夹 可以直接用文件夹名称 默认会找index.js 也可以确定是哪个文件名字
     entry       : {
-        'app': resourcesPath + '/index.js',
+        'app': resourcesPath + '/index.js'
     },
     resolve     : {
         extensions: ['.js', '.jsx'],
@@ -231,8 +231,7 @@ const config = {
         }
     ],
     plugins     : [
-        new CleanWebpackPlugin(['js', 'index.html', 'css', 'images'], {
-            root   : publicPath,
+        new CleanWebpackPlugin(['public'], {
             verbose: true,
             dry    : false
         }),
@@ -244,13 +243,14 @@ const config = {
                 viewport   : 'minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no',
                 keyword    : 'keyword',
                 description: 'description'
-            }
+            },
+            //chunks: ['app','vendors','styles','runtime']
         }),
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output
             // both options are optional
             filename     : 'css/[name].css',
-            chunkFilename: 'css/[id].css',
+            //chunkFilename: 'css/[id].css',
         }),
         new HappyPack({
             id        : 'babel',
@@ -310,7 +310,7 @@ const config = {
     ],
     optimization: {
         runtimeChunk: {
-            name: 'runtime.bundle'
+            name: 'runtime'
         },
         minimizer   : [
             new TerserPlugin(),
@@ -326,15 +326,14 @@ const config = {
                     chunks   : 'initial',
                     priority : 1 // 该配置项是设置处理的优先级，数值越大越优先处理
                 },
-                commons: {
-                    test              : /[\\/]src[\\/]common[\\/]/,
-                    name              : 'commons',
-                    minSize           : 30000,
-                    minChunks         : 3,
-                    chunks            : 'initial',
-                    priority          : -1,
-                    reuseExistingChunk: true // 这个配置允许我们使用已经存在的代码块
-                }
+                styles: {
+                    name: 'styles',
+                    test: /\.scss$/,
+                    chunks: 'all',
+                    minChunks: 2, // 最小被引用次数
+                    minSize: 0, // 最小体积（默认30000）
+                    priority : 10 // 该配置项是设置处理的优先级，数值越大越优先处理
+                },
             }
         }
     }

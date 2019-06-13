@@ -14,7 +14,6 @@ import { Link as RouterLink } from 'react-router-dom';
 import axios from 'axios';
 import showMessage from 'fts/components/showMessage';
 import { categoryMap } from 'fts/config/app.js';
-import css from 'fts/assets/scss/a.scss';
 import Qs from 'qs';
 
 const styles = theme => ({
