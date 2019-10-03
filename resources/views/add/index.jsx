@@ -73,7 +73,7 @@ class Add extends React.Component {
     state = {
         type      : '0',
         amount    : '',
-        category  : 'c-1',
+        category  : 'c-1-1',
         remark    : '',
         date      : `${ year }-${ month }-${ day }`,
         submission: false
