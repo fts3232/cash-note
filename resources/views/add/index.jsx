@@ -45,10 +45,12 @@ day = day < 10 ? `0${  day }` : day;
 
 const selectCategoryMap = {
     'cost'  : [],
-    'income': []
+    'income': [],
+    'invest': []
 };
 let costFlag1 = false;
 let costFlag2 = false;
+let flag1 = false;
 for (const x in categoryMap) {
     if (x.indexOf('c-') !== -1) {
         if (categoryMap[x].indexOf('生活必要花费') !== -1) {
@@ -63,6 +65,14 @@ for (const x in categoryMap) {
                 costFlag2 = selectCategoryMap.cost.length - 1;
             }
             selectCategoryMap.cost[costFlag2].items.push({ 'label': categoryMap[x], 'value': x });
+        }
+    } else if (x.indexOf('b-') !== -1) {
+        if (categoryMap[x].indexOf('基金') !== -1) {
+            if (flag1 === false) {
+                selectCategoryMap.invest.push({ 'label': '基金', 'items': [] });
+                flag1 = selectCategoryMap.invest.length - 1;
+            }
+            selectCategoryMap.invest[flag1].items.push({ 'label': categoryMap[x], 'value': x });
         }
     } else {
         selectCategoryMap.income.push({ 'label': categoryMap[x], 'value': x });
@@ -82,7 +92,13 @@ class Add extends React.Component {
     handleChange = name => event => {
         const { value } = event.target;
         if (name === 'type') {
-            this.setState({ 'category': value === '0' ? 'c-1-1' : 'i-1-1' });
+            let category = 'c-1-1';
+            if (value === '1') {
+                category = 'i-1-1';
+            } else if (value === '2') {
+                category = 'b-1-1';
+            }
+            this.setState({ 'category': category });
         }
         this.setState({ [name]: value });
     };
@@ -120,7 +136,12 @@ class Add extends React.Component {
     render() {
         const { classes } = this.props;
         const { type } = this.state;
-        const categorys = type === '0' ? selectCategoryMap.cost : selectCategoryMap.income;
+        let categorys = selectCategoryMap.cost;
+        if (type === '1') {
+            categorys = selectCategoryMap.income;
+        } else if (type === '2') {
+            categorys = selectCategoryMap.invest;
+        }
         return (
             <div className={classes.root}>
                 <FormGroup>
@@ -149,6 +170,7 @@ class Add extends React.Component {
                         >
                             <FormControlLabel value="0" control={<Radio/>} label="支出"/>
                             <FormControlLabel value="1" control={<Radio/>} label="收入"/>
+                            <FormControlLabel value="2" control={<Radio/>} label="投资"/>
                         </RadioGroup>
                     </FormControl>
                     <FormControl component="fieldset" className={classes.formControl}>
@@ -159,19 +181,19 @@ class Add extends React.Component {
                             name="category"
                             className={classes.textField}
                         >
-                            { categorys.map((category) => {
+                            {categorys.map((category) => {
                                 if (typeof category.items !== 'undefined') {
                                     return (
                                         <optgroup label={category.label}>
-                                            { category.items.map((items) => {
-                                                return (<option value={items.value}>{ items.label }</option>);
-                                            }) }
+                                            {category.items.map((items) => {
+                                                return (<option value={items.value}>{items.label}</option>);
+                                            })}
                                         </optgroup>
                                     );
-                                } 
-                                return (<option value={category.value}>{ category.label }</option>);
-                                
-                            }) }
+                                }
+                                return (<option value={category.value}>{category.label}</option>);
+
+                            })}
                         </NativeSelect>
                     </FormControl>
                     <FormControl component="fieldset" className={classes.formControl}>

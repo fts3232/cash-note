@@ -94,7 +94,7 @@ class Dashboard extends React.Component {
             xAxis: [
                 {
                     type: 'category',
-                    data: xAxisData
+                    data: data.key
                 }
             ],
             yAxis: [
@@ -102,6 +102,12 @@ class Dashboard extends React.Component {
                     type: 'value'
                 }
             ],
+            dataZoom: [{
+                type   : 'inside',        // 详细配置可见echarts官网
+                start  : 50,
+                minSpan: 50,
+                maxSpan: 50
+            }],
             series: [
                 {
                     name: '收入',
@@ -112,6 +118,11 @@ class Dashboard extends React.Component {
                     name: '支出',
                     type: 'bar',
                     data: data.cost
+                },
+                {
+                    name: '投资',
+                    type: 'bar',
+                    data: data.invest
                 }
             ]
         };
@@ -157,7 +168,7 @@ class Dashboard extends React.Component {
                                 总收入
                             </Typography>
                             <Typography variant="h5" component="h5" className={classes.income}>
-                                { this.numberFormat(grossIncome) }
+                                {this.numberFormat(grossIncome)}
                             </Typography>
                         </CardContent>
                     </Card>
@@ -169,7 +180,7 @@ class Dashboard extends React.Component {
                                 总支出
                             </Typography>
                             <Typography variant="h5" component="h2" className={classes.cost}>
-                                { this.numberFormat(totalExpenditure) }
+                                {this.numberFormat(totalExpenditure)}
                             </Typography>
                         </CardContent>
                     </Card>
@@ -181,7 +192,7 @@ class Dashboard extends React.Component {
                                 净值
                             </Typography>
                             <Typography variant="h5" component="h2" className={classes.income}>
-                                { this.numberFormat((grossIncome - totalExpenditure).toFixed(2)) }
+                                {this.numberFormat((grossIncome - totalExpenditure).toFixed(2))}
                             </Typography>
                         </CardContent>
                     </Card>
